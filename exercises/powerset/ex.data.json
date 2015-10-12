@@ -1,0 +1,31 @@
+{
+    "meta": {
+        "author": "",
+        "email": "",
+
+        "title": "Powerset",
+        "description": "Learn the powerset through recursion",
+        "id": "answerid-stl",
+        "language": "python",
+        "difficulty": "medium",
+        "mainFile": "main.js",
+        "instrFile": "instr.html",
+        "constructorName": "main",
+        "menuDisplayName": "Powerset",
+        "requires": {
+        }
+    },
+    "code": {
+        "lang": "python",
+        "size": "small",
+        "display": "def powerset(a):\n# returns a list of all subsets of the list a\nif (len(a) == 0):\n    return [[]]\nelse:\n    allSubsets = [ ]\n    for subset in powerset(a[1:]):\n        allSubsets += [subset]\n        allSubsets += [[a[0]] + subset]\n    return allSubsets"
+    },
+    "state": {
+        "listLength": 3,
+        "recursiveCalls": [],
+        "recursiveDepth": 0,
+        "isReturning": false,
+        "isSubstituting": false,
+        "isMerging": false
+    }
+}
