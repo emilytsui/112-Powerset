@@ -28,6 +28,7 @@ var main = function(ex) {
     ////////////content configuration
     var listLength = 2;
     //a list of objects that have two properties: input and result
+    //Most important varaible
     var recursiveCalls = []; 
     var recursiveDepth = 0;
     //true if returning
