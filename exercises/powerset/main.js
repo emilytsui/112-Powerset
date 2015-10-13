@@ -114,7 +114,7 @@ var main = function(ex) {
     console.log(state.recursiveCalls)
 
     //perform appropriate action after prevButton is clicked
-    function prevStep() {
+    function prevStep() { //don't think this is implemented correctly
         if (state.recursiveDepth < 0){
             //Do nothing at depth 0
             return;

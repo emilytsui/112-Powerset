@@ -8,7 +8,7 @@
         "difficulty": "medium",
         "mode": "quiz-immediate",
         "exercises": [{
-            "path": "exercises/build_me"
+            "path": "exercises/powerset"
         },{
             "path":"exercises/placeholder"
         }]
