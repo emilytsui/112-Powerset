@@ -72,6 +72,7 @@ var main = function(ex) {
         else if (typeof(x) == "string")
             return "\""+x+"\"";
         else {
+            // x is a list
             var str = "[";
             for (var i = 0; i < x.length; i++) {
                 str += xToString(x[i]);
@@ -114,7 +115,31 @@ var main = function(ex) {
 
     //perform appropriate action after prevButton is clicked
     function prevStep() {
-        return //will implement later
+        if (state.recursiveDepth < 0){
+            //Do nothing at depth 0
+            return;
+        }else{
+            if (!state.isReturning){
+                var thisCall = state.recursiveCalls[state.recursiveDepth];
+                thisCall.h1.remove();
+                thisCall.h2.remove();
+                thisCall.h3.remove();
+                drawCall();
+                state.recursiveDepth--;
+            }else{
+                //if next step is to merge
+                if (state.isMerging) {
+                    drawReturn();//This may need to be changed!!
+                    state.isMerging = false;
+                } else {
+                //Normal return
+                    drawMerge();//This may need changing as well.
+                    if (state.recursiveDepth != 0) state.isMerging = true;
+                    state.recursiveDepth++;
+                }
+            }
+        }
+        return;
     }
 
     //perform appropriate action after nextButton is clicked
@@ -152,7 +177,12 @@ var main = function(ex) {
 
     //perform appropriate action after skipButton is clicked
     function skipStep() {
-        return //will implement later
+        // This is a quick implementation of skip using next
+        // May consider revising this in the future.
+        while (state.recursiveDepth != -1){
+            nextStep();
+        }
+        return;
     }
 
     //draw blocks representing function call
@@ -194,7 +224,7 @@ var main = function(ex) {
         thisCall.h2 = h2;
 
         //[*] +
-        var s3 = "["+xToString(input[0])+"] +"
+        var s3 = xToString([input[0]])+" +"
         var h3 = ex.createHeader(xOrigin, yOrigin + 2 * lineHeight, s3,
                                 {size:fontSize, textAlign:"right"});
         h3.width(blockWidth);
