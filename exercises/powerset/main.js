@@ -40,12 +40,19 @@ var main = function(ex) {
 
 
     ///////////////button configuration
-    var nextButton = ex.createButton(canvasWidth*(8/10), canvasHeight*(9/10),
+    ex.chromeElements.undoButton.disable();
+    ex.chromeElements.redoButton.disable();
+    ex.chromeElements.resetButton.disable();
+    var nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
                                     "Next").on("click", nextStep)
-    var prevButton = ex.createButton(canvasWidth*(8/11), canvasHeight*(9/10),
+    var prevButton = ex.createButton(canvasWidth*(9/11)-60, canvasHeight*(9/10),
                                      "Prev").on("click", prevStep)
-    var skipButton = ex.createButton(canvasWidth*(8/9), canvasHeight*(9/10),
+    prevButton.disable(); //Not implemented correctly for right now
+    var skipButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
                                      "Skip").on("click", skipStep)
+    var quizButton = ex.createButton(canvasWidth*(8/9)-10, 10,
+                                     "Start Quiz").on("click", startQuiz)
+    quizButton.disable(); //Can't do quiz until step through visualization
 
 
 
@@ -153,6 +160,7 @@ var main = function(ex) {
 
         if (state.recursiveDepth == -1) {
             //finish
+            quizButton.enable();
             return;
         }
 
@@ -182,6 +190,7 @@ var main = function(ex) {
         while (state.recursiveDepth != -1){
             nextStep();
         }
+        quizButton.enable();
         return;
     }
 
@@ -203,7 +212,8 @@ var main = function(ex) {
         if (state.recursiveDepth == state.listLength) {
             var s1 = "powerset("+xToString(input)+")"
             var h1 = ex.createHeader(xOrigin, yOrigin, s1,
-                        {size:fontSize, textAlign:"right"});
+                        {size:fontSize, textAlign:"right",
+                         transition:"fade"});
             h1.width(blockWidth);
             thisCall.h1 = h1;
             return;
@@ -212,21 +222,24 @@ var main = function(ex) {
         //powerset([*,*,*****])
         var s1 = "powerset("+xToString(input)+")"
         var h1 = ex.createHeader(xOrigin, yOrigin, s1,
-                                {size:fontSize, textAlign:"right"});
+                                {size:fontSize, textAlign:"right",
+                                 transition:"fade"});
         h1.width(blockWidth);
         thisCall.h1 = h1;
 
         //[ ] +
         var s2 = "[ ] +"
         var h2 = ex.createHeader(xOrigin, yOrigin + lineHeight, s2,
-                                {size:fontSize, textAlign:"right"});
+                                {size:fontSize, textAlign:"right",
+                                 transition:"fade"});
         h2.width(blockWidth);
         thisCall.h2 = h2;
 
         //[*] +
         var s3 = xToString([input[0]])+" +"
         var h3 = ex.createHeader(xOrigin, yOrigin + 2 * lineHeight, s3,
-                                {size:fontSize, textAlign:"right"});
+                                {size:fontSize, textAlign:"right",
+                                 transition:"fade"});
         h3.width(blockWidth);
         thisCall.h3 = h3;
     }
@@ -239,12 +252,12 @@ var main = function(ex) {
         //if base case just remove one header
         if (state.recursiveDepth == state.listLength) {
             //Base Case
-            thisCall.h1.remove();
+            thisCall.h1.hide();
             var s1 = "[ ]"
         } else {
-            thisCall.h1.remove();
-            thisCall.h2.remove();
-            thisCall.h3.remove();
+            thisCall.h1.hide();
+            thisCall.h2.hide();
+            thisCall.h3.hide();
             var s1 = xToString(thisCall.result);
         }
 
@@ -253,19 +266,27 @@ var main = function(ex) {
 
         //display the return value
         var h1 = ex.createHeader(xOrigin+30, yOrigin, s1,
-                    {size:fontSize, textAlign:"left"});
+                    {size:fontSize, textAlign:"left", transition:"fade"});
 
         //Doesn't set the block width to the final resulting list
         if (state.recursiveDepth != 0) h1.width(blockWidth);
         else h1.width(canvasWidth);
         thisCall.h1 = h1;
+
+        //We used .hide() to get the fade transition, but thie removes it
+        // to avoid any unforseen complications
+        if (state.recursiveDepth != state.listLength) {
+            thisCall.h2.remove();
+            thisCall.h3.remove();
+        }
+
     }
 
     //display the result after merge(or not) the first element with the returned value
     function drawMerge() {
 
         //remove header of the callee
-        state.recursiveCalls[state.recursiveDepth+1].h1.remove();
+        state.recursiveCalls[state.recursiveDepth+1].h1.hide();
 
         /////////The following code has a scary bug, possibly involving list alias.
         /////////Consider remove it.
@@ -288,6 +309,10 @@ var main = function(ex) {
 
         // state.recursiveCalls[state.recursiveDepth].h2.text(s2+": "+xToString(firstHalfOfResult));
         // state.recursiveCalls[state.recursiveDepth].h3.text(s3+": "+xToString(secondHalfOfResult));
+    }
+
+    function startQuiz() {
+        return;
     }
 
 
