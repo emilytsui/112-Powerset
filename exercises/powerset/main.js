@@ -43,6 +43,7 @@ var main = function(ex) {
     ex.chromeElements.undoButton.disable();
     ex.chromeElements.redoButton.disable();
     ex.chromeElements.resetButton.disable();
+    ex.chromeElements.submitButton.disable();
     var nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
                                     "Next").on("click", nextStep)
     var prevButton = ex.createButton(canvasWidth*(9/11)-60, canvasHeight*(9/10),
@@ -311,10 +312,115 @@ var main = function(ex) {
         // state.recursiveCalls[state.recursiveDepth].h3.text(s3+": "+xToString(secondHalfOfResult));
     }
 
-    function startQuiz() {
-        return;
+    function nextQuestion() {
+        prev = ex.data.state.questionNum;
+        if (prev == 1) {
+            eraseQuestion();
+            drawQ2();
+        }
+
+        ex.data.state.questionNum ++;
     }
 
+    var nextQButton;
+
+    function startQuiz() {
+        var thisCall = state.recursiveCalls[0];
+        thisCall.h1.remove();
+        codeWell1.remove();
+        prevButton.remove();
+        skipButton.remove();
+        nextButton.remove();
+        quizButton.remove();
+
+        drawQ1();
+        ex.data.state.questionNum = 1;
+
+    }
+    var question;
+    var code;
+    var input;
+    var selections;
+    var submitQButton;
+
+    function eraseQuestion() {
+        question.remove();
+        code.remove();
+        input.remove();
+        for (var i = 0; i < selections.length; i++) {
+            selections[i].remove();
+        }
+        submitQButton.remove();
+    }
+
+    //displays question 1 and all its components
+    function drawQ1() {
+        nextQButton = ex.createButton(canvasWidth*(10/11),
+                canvasHeight*(9/10), "Next").on("click", nextQuestion);
+        nextQButton.disable();
+
+        ex.graphics.ctx.moveTo(canvasWidth/2, 0);
+        ex.graphics.ctx.lineTo(canvasWidth/2, canvasHeight);
+        ex.graphics.ctx.stroke();
+
+        question = ex.createParagraph(10,10,ex.data.question1.question,
+                                {size: "large"});
+        code = ex.createCode(10, canvasHeight/3,
+                    ex.data.question1.code.display, ex.data.question1.code);
+        input = ex.createInputText(canvasWidth/2+20,20,"Answer");
+        selections = drawSelections(ex.data.question1.options, canvasWidth/2+20, 100, 100, "large");
+        submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
+            "Submit").on("click", function() {
+                    submitQButton.disable();
+                    input.disable();
+                    nextQButton.enable();
+                    ex.data.question1.selected = input.text().trim();
+                    if (ex.data.question1.answer == ex.data.question1.selected) {
+                        ex.showFeedback("Correct!");
+                    }
+                    else ex.showFeedback("Incorrect. Step through the visualization again to see why.");
+                });
+    }
+
+    function drawQ2() {
+        nextQButton = ex.createButton(canvasWidth*(10/11),
+                canvasHeight*(9/10), "Next").on("click", nextQuestion);
+        nextQButton.disable();
+
+        ex.graphics.ctx.moveTo(canvasWidth/2, 0);
+        ex.graphics.ctx.lineTo(canvasWidth/2, canvasHeight);
+        ex.graphics.ctx.stroke();
+
+        question = ex.createParagraph(10,10,ex.data.question2.question,
+                                {size: "large"});
+        codeWell = ex.createCode(10, canvasHeight/3,
+                    ex.data.question2.code.display, ex.data.question2.code);
+        codeWell.width(canvasWidth/2-40);
+        input = ex.createInputText(canvasWidth/2+20,20,"Answer");
+        selections = drawSelections(ex.data.question2.options, canvasWidth/2+20, 100, 100, "large");
+        submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
+            "Submit").on("click", function() {
+                    submitQButton.disable();
+                    input.disable();
+                    nextQButton.enable();
+                    ex.data.question2.selected = input.text().trim();
+                    if (ex.data.question2.answer == ex.data.question2.selected) {
+                        ex.showFeedback("Correct!");
+                    }
+                    else ex.showFeedback("Incorrect. Step through the visualization again to see why.");
+                });
+    }
+
+    // Creates paragraph objects of the question selections
+    function drawSelections(selections, startX, startY, increment, size) {
+        var options = new Array();
+        for (var i = 0; i < selections.length; i ++) {
+            var a = ex.createParagraph(startX, startY + increment*i,
+                                       selections[i], {size: size});
+            options.push(a);
+        }
+        return options;
+    }
 
 
 };

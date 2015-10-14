@@ -26,6 +26,29 @@
         "recursiveDepth": 0,
         "isReturning": false,
         "isSubstituting": false,
-        "isMerging": false
+        "isMerging": false,
+        "questionNum": 0
+    },
+    "question1": {
+        "question": "1. What is the resulting list if we call powerset([5,12,3]) using the same powerset function as defined below?",
+        "code": {
+            "lang": "python",
+            "size": "medium",
+            "display": "def powerset(a):\n# returns a list of all subsets of the list a\nif (len(a) == 0):\n    return [[]]\nelse:\n    allSubsets = [ ]\n    for subset in powerset(a[1:]):\n        allSubsets += [subset]\n        allSubsets += [[a[0]] + subset]\n    return allSubsets"
+        },
+        "options": ["a. [ [ ], [5], [12], [3], [5,12], [5,3], [12,3], [5,12,3] ]","b. [ [ ], [5], [12], [5,12], [3], [5,3], [12,3], [5,12,3] ]","c. [ [ ], [3], [12], [3,12], [5], [3,5], [12,5], [3,12,5] ]","d. [ [5], [12], [5,12], [3], [5,3], [12,3], [5,12,3], [ ] ]"],
+        "answer": "a",
+        "selected": "z"
+    },
+    "question2": {
+        "question": "2. What is the resulting list if we call powerset([5,12,3]) using the same powerset function as defined below?",
+        "code": {
+            "lang": "python",
+            "size": "medium",
+            "display": "def powerset(a):\n# returns a list of all subsets of the list a\nif (len(a) == 0):\n    return [[]]\nelse:\n    allSubsets = [ ]\n    for subset in powerset(a[:len(a)-1]):\n        allSubsets += [subset]\n        allSubsets += [[a[len(a)-1]] + subset]\n    return allSubsets"
+        },
+        "options": ["a. [ [ ], [1], [2], [1,2], [3], [1,3], [2,3], [1,2,3] ]","b. [ [ ], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3] ]","c. [ [ ], [3], [2], [1], [3,2], [3,1], [2,1], [3,2,1] ]","d. [ [ ], [3], [2], [3,2], [1], [3,1], [2,1], [3,2,1] ]"],
+        "answer": "d",
+        "selected": "z"
     }
 }
