@@ -353,6 +353,23 @@ var main = function(ex) {
         submitQButton.remove();
     }
 
+    function selectAnswer(selections, i, qNum) {
+        selection = selections[i];
+        selection.style()["fontStyle"] == "italic";
+        if (i == 0 && qNum == 1) ex.data.question1.selected = "a";
+        else if (i == 1 && qNum == 1) ex.data.question1.selected = "b";
+        else if (i == 2 && qNum == 1) ex.data.question1.selected = "c";
+        else if (i == 3 && qNum == 1) ex.data.question1.selected = "d";
+        else if (i == 0) ex.data.question2.selected = "a";
+        else if (i == 1) ex.data.question2.selected = "b";
+        else if (i == 2) ex.data.question2.selected = "c";
+        else if (i == 3) ex.data.question2.selected = "d";
+        for (var j = 0; j < selections.length; j++) {
+            if (i == j) continue;
+            selections[j].style()["fontStyle"] == "normal";
+        }
+    }
+
     //displays question 1 and all its components
     function drawQ1() {
         nextQButton = ex.createButton(canvasWidth*(10/11),
@@ -369,6 +386,11 @@ var main = function(ex) {
                     ex.data.question1.code.display, ex.data.question1.code);
         input = ex.createInputText(canvasWidth/2+20,20,"Answer");
         selections = drawSelections(ex.data.question1.options, canvasWidth/2+20, 100, 100, "large");
+        // for (var i = 0; i < selections.length; i++) {
+        //     selections[i].on("click", function() {
+        //         selectAnswer(selections[i], i, 1);
+        //     });
+        // }
         submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
             "Submit").on("click", function() {
                     submitQButton.disable();
@@ -398,6 +420,11 @@ var main = function(ex) {
         codeWell.width(canvasWidth/2-40);
         input = ex.createInputText(canvasWidth/2+20,20,"Answer");
         selections = drawSelections(ex.data.question2.options, canvasWidth/2+20, 100, 100, "large");
+        // for (var i = 0; i < selections.length; i++) {
+        //     selections[i].on("click", function() {
+        //         selectAnswer(selections[i], i, 1);
+        //     });
+        // }
         submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
             "Submit").on("click", function() {
                     submitQButton.disable();

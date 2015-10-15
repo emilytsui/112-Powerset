@@ -41,7 +41,7 @@
         "selected": "z"
     },
     "question2": {
-        "question": "2. What is the resulting list if we call powerset([5,12,3]) using the same powerset function as defined below?",
+        "question": "2. What is the resulting list if we call powerset([1,2,3]) using the same powerset function as defined below?",
         "code": {
             "lang": "python",
             "size": "medium",
