@@ -25,11 +25,16 @@
         "recursiveCalls": [],
         "recursiveDepth": 0,
         "isReturning": false,
-        "isSubstituting": false,
         "isMerging": false,
         "questionNum": 0
     },
     "question1": {
+        "question": "1. What will the next recursive call be?",
+        "options": ["a. powerset([6])", "b. powerset([6,2])", "c. powerset([2,8])", "d. powerset([8])"],
+        "answer": "c",
+        "selected": "z"
+    },
+    "oldQuestion1": {
         "question": "1. What is the resulting list if we call powerset([5,12,3]) using the same powerset function as defined below?",
         "code": {
             "lang": "python",
@@ -40,7 +45,7 @@
         "answer": "a",
         "selected": "z"
     },
-    "question2": {
+    "oldQuestion2": {
         "question": "2. What is the resulting list if we call powerset([1,2,3]) using the same powerset function as defined below?",
         "code": {
             "lang": "python",

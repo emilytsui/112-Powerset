@@ -66,7 +66,11 @@ var main = function(ex) {
     function generateList() {
         var arr = [];
         for (i = 0; i < state.listLength; i++) {
-            n = round(Math.random() * 10);
+            n = Math.round(Math.random() * 10);
+            while(arr.indexOf(n) != -1) {
+            //Makes sure no item is repeated in array
+                n = Math.round(Math.random() * 10);
+            }
             arr.push(n);
         }
         return(arr);
@@ -259,14 +263,16 @@ var main = function(ex) {
             thisCall.h1.hide();
             thisCall.h2.hide();
             thisCall.h3.hide();
+            thisCall.h4.hide();
+            thisCall.h5.hide();
             var s1 = xToString(thisCall.result);
         }
 
-        var xOrigin = sideMargin + blockWidth * state.recursiveDepth;
+        var xOrigin = sideMargin + blockWidth * state.recursiveDepth + 30;
         var yOrigin = topMargin + state.recursiveDepth * 1.5 * lineHeight;
 
         //display the return value
-        var h1 = ex.createHeader(xOrigin+30, yOrigin, s1,
+        var h1 = ex.createHeader(xOrigin, yOrigin, s1,
                     {size:fontSize, textAlign:"left", transition:"fade"});
 
         //Doesn't set the block width to the final resulting list
@@ -274,11 +280,13 @@ var main = function(ex) {
         else h1.width(canvasWidth);
         thisCall.h1 = h1;
 
-        //We used .hide() to get the fade transition, but thie removes it
+        //We used .hide() to get the fade transition, but this removes it
         // to avoid any unforseen complications
         if (state.recursiveDepth != state.listLength) {
             thisCall.h2.remove();
             thisCall.h3.remove();
+            thisCall.h4.remove();
+            thisCall.h5.remove();
         }
 
     }
@@ -288,6 +296,24 @@ var main = function(ex) {
 
         //remove header of the callee
         state.recursiveCalls[state.recursiveDepth+1].h1.hide();
+
+        var listText = state.recursiveCalls[state.recursiveDepth+1].h1.text();
+        var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 1) + 10;
+        var depth = state.recursiveDepth;
+        var yOrigin1 = topMargin + (depth + 1) * (0.5*depth)*lineHeight + 34;
+        var yOrigin2 = topMargin + (depth + 1) * (0.5*depth)*lineHeight + 66;
+        if (depth%2 == 1) { //hacky fix for the height of the appended lists
+            yOrigin1 += 15;
+            yOrigin2 += 15;
+        }
+        var h1 = ex.createHeader(xOrigin, yOrigin1, listText,
+                    {size:fontSize, textAlign:"left", transition:"fade"});
+        var h2 = ex.createHeader(xOrigin, yOrigin2, listText,
+                    {size:fontSize, textAlign:"left", transition:"fade"});
+
+        var thisCall = state.recursiveCalls[state.recursiveDepth];
+        thisCall.h4 = h1;
+        thisCall.h5 = h2;
 
         /////////The following code has a scary bug, possibly involving list alias.
         /////////Consider remove it.
@@ -312,142 +338,260 @@ var main = function(ex) {
         // state.recursiveCalls[state.recursiveDepth].h3.text(s3+": "+xToString(secondHalfOfResult));
     }
 
+    // Goes to the next step in quiz mode (regardless of whether the next
+    // step is an actual question or not)
     function nextQuestion() {
-        prev = ex.data.state.questionNum;
-        if (prev == 1) {
-            eraseQuestion();
-            drawQ2();
+        console.log(state.recursiveDepth);
+        if (state.recursiveDepth == state.listLength + 1) {
+            //start to return
+            state.isReturning = true;
+            state.recursiveDepth--;
         }
 
-        ex.data.state.questionNum ++;
+        if (state.recursiveDepth == -1) {
+            //finish
+            quizButton.enable();
+            return;
+        }
+
+        if (!state.isReturning) {
+            //recursive call
+            drawCall();
+
+            //// Starts question 1
+            if (state.recursiveDepth == 0) {
+                ex.data.state.questionNum = 1;
+                nextQButton.disable();
+                submitQButton.disable();
+                drawQ1();
+            }
+            state.recursiveDepth++;
+        } else {
+            //if next step is to merge
+            if (state.isMerging) {
+                drawMerge();
+                state.isMerging = false;
+            } else {
+            //Normal return
+                drawReturn();
+                if (state.recursiveDepth != 0) state.isMerging = true;
+                state.recursiveDepth--;
+            }
+        }
+    }
+
+    // Checks if the submitted answer to a question in quiz mode is correct
+    function submitQuestion() {
+        submitQButton.disable();
+        if (state.questionNum == 1) {
+            if (ex.data.question1.answer == ex.data.question1.selected) {
+                ex.showFeedback("Correct!");
+            }
+            else ex.showFeedback("Incorrect");
+        }
+        for (var i = 0; i < questionObjects.length; i++) {
+            questionObjects[i].remove();
+        }
+        nextQButton.enable();
     }
 
     var nextQButton;
+    var submitQButton;
+    var questionObjects = [];
 
+    // Removes the visualization elements
+    // Adds the necessary quiz elements
     function startQuiz() {
         var thisCall = state.recursiveCalls[0];
         thisCall.h1.remove();
-        codeWell1.remove();
         prevButton.remove();
         skipButton.remove();
         nextButton.remove();
         quizButton.remove();
 
-        drawQ1();
-        ex.data.state.questionNum = 1;
+        // resetting values
+        state.recursiveCalls = [];
+        state.recursiveDepth = 0;
+        state.isReturning = false;
+        state.isMerging = false;
 
-    }
-    var question;
-    var code;
-    var input;
-    var selections;
-    var submitQButton;
-
-    function eraseQuestion() {
-        question.remove();
-        code.remove();
-        input.remove();
-        for (var i = 0; i < selections.length; i++) {
-            selections[i].remove();
-        }
-        submitQButton.remove();
+        // powersetMain(generateList());
+        powersetMain([6,2,8]); // hardcoded temporarily
+        nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
+                                      "Next").on("click", nextQuestion);
+        submitQButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
+                                        "Submit").on("click", submitQuestion);
+        submitQButton.disable();
     }
 
-    function selectAnswer(selections, i, qNum) {
-        selection = selections[i];
-        selection.style()["fontStyle"] == "italic";
-        if (i == 0 && qNum == 1) ex.data.question1.selected = "a";
-        else if (i == 1 && qNum == 1) ex.data.question1.selected = "b";
-        else if (i == 2 && qNum == 1) ex.data.question1.selected = "c";
-        else if (i == 3 && qNum == 1) ex.data.question1.selected = "d";
-        else if (i == 0) ex.data.question2.selected = "a";
-        else if (i == 1) ex.data.question2.selected = "b";
-        else if (i == 2) ex.data.question2.selected = "c";
-        else if (i == 3) ex.data.question2.selected = "d";
-        for (var j = 0; j < selections.length; j++) {
-            if (i == j) continue;
-            selections[j].style()["fontStyle"] == "normal";
-        }
-    }
-
-    //displays question 1 and all its components
+    var option1, option2, option3, option4;
     function drawQ1() {
-        nextQButton = ex.createButton(canvasWidth*(10/11),
-                canvasHeight*(9/10), "Next").on("click", nextQuestion);
-        nextQButton.disable();
-
-        ex.graphics.ctx.moveTo(canvasWidth/2, 0);
-        ex.graphics.ctx.lineTo(canvasWidth/2, canvasHeight);
-        ex.graphics.ctx.stroke();
-
-        question = ex.createParagraph(10,10,ex.data.question1.question,
-                                {size: "large"});
-        code = ex.createCode(10, canvasHeight/3,
-                    ex.data.question1.code.display, ex.data.question1.code);
-        input = ex.createInputText(canvasWidth/2+20,20,"Answer");
-        selections = drawSelections(ex.data.question1.options, canvasWidth/2+20, 100, 100, "large");
-        // for (var i = 0; i < selections.length; i++) {
-        //     selections[i].on("click", function() {
-        //         selectAnswer(selections[i], i, 1);
-        //     });
-        // }
-        submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
-            "Submit").on("click", function() {
-                    submitQButton.disable();
-                    input.disable();
-                    nextQButton.enable();
-                    ex.data.question1.selected = input.text().trim();
-                    if (ex.data.question1.answer == ex.data.question1.selected) {
-                        ex.showFeedback("Correct!");
-                    }
-                    else ex.showFeedback("Incorrect. Step through the visualization again to see why.");
-                });
+        var question = ex.createParagraph(canvasWidth/2,canvasHeight*(6/10),
+                            ex.data.question1.question, {size: "large"});
+        var option1 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+30,
+                    ex.data.question1.options[0], {size: "large"}).on("click",
+                    function() {
+                        option1.style()["fontStyle"] = "italic";
+                        option2.style()["fontStyle"] = "normal";
+                        option3.style()["fontStyle"] = "normal";
+                        option4.style()["fontStyle"] = "normal";
+                        ex.data.question1.selected = "a";
+                        submitQButton.enable();
+                        console.log(ex.data.question1.selected);
+                    });
+        var option2 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+60,
+                    ex.data.question1.options[1], {size: "large"}).on("click",
+                    function() {
+                        option1.style()["fontStyle"] = "normal";
+                        option2.style()["fontStyle"] = "italic";
+                        option3.style()["fontStyle"] = "normal";
+                        option4.style()["fontStyle"] = "normal";
+                        ex.data.question1.selected = "b";
+                        submitQButton.enable();
+                        console.log(ex.data.question1.selected);
+                    });
+        var option3 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+90,
+                    ex.data.question1.options[2], {size: "large"}).on("click",
+                    function() {
+                        option1.style()["fontStyle"] = "normal";
+                        option2.style()["fontStyle"] = "normal";
+                        option3.style()["fontStyle"] = "italic";
+                        option4.style()["fontStyle"] = "normal";
+                        ex.data.question1.selected = "c";
+                        submitQButton.enable();
+                        console.log(ex.data.question1.selected);
+                    });
+        var option4 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+120,
+                    ex.data.question1.options[3], {size: "large"}).on("click",
+                    function() {
+                        option1.style()["fontStyle"] = "normal";
+                        option2.style()["fontStyle"] = "normal";
+                        option3.style()["fontStyle"] = "italic";
+                        option4.style()["fontStyle"] = "normal";
+                        ex.data.question1.selected = "d";
+                        submitQButton.enable();
+                        console.log(ex.data.question1.selected);
+                    });
+        questionObjects.push(question);
+        questionObjects.push(option1);
+        questionObjects.push(option2);
+        questionObjects.push(option3);
+        questionObjects.push(option4);
     }
 
-    function drawQ2() {
-        nextQButton = ex.createButton(canvasWidth*(10/11),
-                canvasHeight*(9/10), "Next").on("click", nextQuestion);
-        nextQButton.disable();
+    //////// The following code was used for the old version of the quiz
+    ////// Will be removed once the new version works
+    // var question;
+    // var code;
+    // var input;
+    // var selections;
+    // var submitQButton;
 
-        ex.graphics.ctx.moveTo(canvasWidth/2, 0);
-        ex.graphics.ctx.lineTo(canvasWidth/2, canvasHeight);
-        ex.graphics.ctx.stroke();
+    // function eraseQuestion() {
+    //     question.remove();
+    //     code.remove();
+    //     input.remove();
+    //     for (var i = 0; i < selections.length; i++) {
+    //         selections[i].remove();
+    //     }
+    //     submitQButton.remove();
+    // }
 
-        question = ex.createParagraph(10,10,ex.data.question2.question,
-                                {size: "large"});
-        codeWell = ex.createCode(10, canvasHeight/3,
-                    ex.data.question2.code.display, ex.data.question2.code);
-        codeWell.width(canvasWidth/2-40);
-        input = ex.createInputText(canvasWidth/2+20,20,"Answer");
-        selections = drawSelections(ex.data.question2.options, canvasWidth/2+20, 100, 100, "large");
-        // for (var i = 0; i < selections.length; i++) {
-        //     selections[i].on("click", function() {
-        //         selectAnswer(selections[i], i, 1);
-        //     });
-        // }
-        submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
-            "Submit").on("click", function() {
-                    submitQButton.disable();
-                    input.disable();
-                    nextQButton.enable();
-                    ex.data.question2.selected = input.text().trim();
-                    if (ex.data.question2.answer == ex.data.question2.selected) {
-                        ex.showFeedback("Correct!");
-                    }
-                    else ex.showFeedback("Incorrect. Step through the visualization again to see why.");
-                });
-    }
+    // function selectAnswer(selections, i, qNum) {
+    //     selection = selections[i];
+    //     selection.style()["fontStyle"] = "italic";
+    //     if (i == 0 && qNum == 1) ex.data.question1.selected = "a";
+    //     else if (i == 1 && qNum == 1) ex.data.question1.selected = "b";
+    //     else if (i == 2 && qNum == 1) ex.data.question1.selected = "c";
+    //     else if (i == 3 && qNum == 1) ex.data.question1.selected = "d";
+    //     else if (i == 0) ex.data.question2.selected = "a";
+    //     else if (i == 1) ex.data.question2.selected = "b";
+    //     else if (i == 2) ex.data.question2.selected = "c";
+    //     else if (i == 3) ex.data.question2.selected = "d";
+    //     for (var j = 0; j < selections.length; j++) {
+    //         if (i == j) continue;
+    //         selections[j].style()["fontStyle"] = "normal";
+    //     }
+    // }
 
-    // Creates paragraph objects of the question selections
-    function drawSelections(selections, startX, startY, increment, size) {
-        var options = new Array();
-        for (var i = 0; i < selections.length; i ++) {
-            var a = ex.createParagraph(startX, startY + increment*i,
-                                       selections[i], {size: size});
-            options.push(a);
-        }
-        return options;
-    }
+    // //displays question 1 and all its components
+    // function drawQ1() {
+    //     nextQButton = ex.createButton(canvasWidth*(10/11),
+    //             canvasHeight*(9/10), "Next").on("click", nextQuestion);
+    //     nextQButton.disable();
+
+    //     ex.graphics.ctx.moveTo(canvasWidth/2, 0);
+    //     ex.graphics.ctx.lineTo(canvasWidth/2, canvasHeight);
+    //     ex.graphics.ctx.stroke();
+
+    //     question = ex.createParagraph(10,10,ex.data.question1.question,
+    //                             {size: "large"});
+    //     code = ex.createCode(10, canvasHeight/3,
+    //                 ex.data.question1.code.display, ex.data.question1.code);
+    //     input = ex.createInputText(canvasWidth/2+20,20,"Answer");
+    //     selections = drawSelections(ex.data.question1.options, canvasWidth/2+20, 100, 100, "large");
+    //     // for (var i = 0; i < selections.length; i++) {
+    //     //     selections[i].on("click", function() {
+    //     //         selectAnswer(selections[i], i, 1);
+    //     //     });
+    //     // }
+    //     submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
+    //         "Submit").on("click", function() {
+    //                 submitQButton.disable();
+    //                 input.disable();
+    //                 nextQButton.enable();
+    //                 ex.data.question1.selected = input.text().trim();
+    //                 if (ex.data.question1.answer == ex.data.question1.selected) {
+    //                     ex.showFeedback("Correct!");
+    //                 }
+    //                 else ex.showFeedback("Incorrect. Step through the visualization again to see why.");
+    //             });
+    // }
+
+    // function drawQ2() {
+    //     nextQButton = ex.createButton(canvasWidth*(10/11),
+    //             canvasHeight*(9/10), "Next").on("click", nextQuestion);
+    //     nextQButton.disable();
+
+    //     ex.graphics.ctx.moveTo(canvasWidth/2, 0);
+    //     ex.graphics.ctx.lineTo(canvasWidth/2, canvasHeight);
+    //     ex.graphics.ctx.stroke();
+
+    //     question = ex.createParagraph(10,10,ex.data.question2.question,
+    //                             {size: "large"});
+    //     codeWell = ex.createCode(10, canvasHeight/3,
+    //                 ex.data.question2.code.display, ex.data.question2.code);
+    //     codeWell.width(canvasWidth/2-40);
+    //     input = ex.createInputText(canvasWidth/2+20,20,"Answer");
+    //     selections = drawSelections(ex.data.question2.options, canvasWidth/2+20, 100, 100, "large");
+    //     // for (var i = 0; i < selections.length; i++) {
+    //     //     selections[i].on("click", function() {
+    //     //         selectAnswer(selections[i], i, 1);
+    //     //     });
+    //     // }
+    //     submitQButton = ex.createButton(canvasWidth*(10/11)-15, 20,
+    //         "Submit").on("click", function() {
+    //                 submitQButton.disable();
+    //                 input.disable();
+    //                 nextQButton.enable();
+    //                 ex.data.question2.selected = input.text().trim();
+    //                 if (ex.data.question2.answer == ex.data.question2.selected) {
+    //                     ex.showFeedback("Correct!");
+    //                 }
+    //                 else ex.showFeedback("Incorrect. Step through the visualization again to see why.");
+    //             });
+    // }
+
+    // // Creates paragraph objects of the question selections
+    // function drawSelections(selections, startX, startY, increment, size) {
+    //     var options = new Array();
+    //     for (var i = 0; i < selections.length; i ++) {
+    //         var a = ex.createParagraph(startX, startY + increment*i,
+    //                                    selections[i], {size: size});
+    //         options.push(a);
+    //     }
+    //     return options;
+    // }
 
 
 };
