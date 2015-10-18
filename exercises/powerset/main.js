@@ -365,7 +365,7 @@ var main = function(ex) {
                 ex.data.state.questionNum = 1;
                 nextQButton.disable();
                 submitQButton.disable();
-                drawQuestion();
+                drawQ1();
             }
             state.recursiveDepth++;
         } else {
@@ -427,7 +427,7 @@ var main = function(ex) {
     }
 
 
-    
+
     function drawQ1() {
         var answerOptions = [];
         function clickOnAnswer(n) {
