@@ -432,16 +432,14 @@ var main = function(ex) {
         var answerOptions = [];
         function clickOnAnswer(n) {
             return function() {
-            for (i = 0; i < numberOfAnswers; i++) {
-                answerOptions[i].style({fontStyle: "normal"});
+                for (i = 0; i < numberOfAnswers; i++) {
+                    answerOptions[i].style({fontStyle: "normal"});
+                }
+                answerOptions[n].style({fontStyle: "italic"});
+                ex.data.question1.selected = n;
+                submitQButton.enable();
             }
-            answerOptions[n].style({fontStyle: "italic"});
-            ex.data.question1.selected = n;
-            submitQButton.enable();
         }
-        }
-        // There should be a make questio functio instead of making one
-        // for each question
         var xOrigin = canvasWidth/2;
         var yOrigin = canvasHeight/2+lineHeight;
         var question = ex.createParagraph(xOrigin, yOrigin,
