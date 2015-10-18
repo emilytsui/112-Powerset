@@ -300,12 +300,16 @@ var main = function(ex) {
         var listText = state.recursiveCalls[state.recursiveDepth+1].h1.text();
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 1) + 10;
         var depth = state.recursiveDepth;
-        var yOrigin1 = topMargin + (depth + 1) * (0.5*depth)*lineHeight + 34;
-        var yOrigin2 = topMargin + (depth + 1) * (0.5*depth)*lineHeight + 66;
-        if (depth%2 == 1) { //hacky fix for the height of the appended lists
-            yOrigin1 += 15;
-            yOrigin2 += 15;
-        }
+        // I think I have solved the height problem for merge.
+        // Just for future reference I kept the original code in comments
+        var yOrigin1 = topMargin + (state.recursiveDepth * 1.5+1) * lineHeight
+        //topMargin + (depth + 1) * (0.5*depth)*lineHeight + 34;
+        var yOrigin2 = topMargin + (state.recursiveDepth * 1.5+2) * lineHeight
+        //topMargin + (depth + 1) * (0.5*depth)*lineHeight + 66;
+        // if (depth%2 == 1) { //hacky fix for the height of the appended lists
+        //     yOrigin1 += 15;
+        //     yOrigin2 += 15;
+        // }
         var h1 = ex.createHeader(xOrigin, yOrigin1, listText,
                     {size:fontSize, textAlign:"left", transition:"fade"});
         var h2 = ex.createHeader(xOrigin, yOrigin2, listText,
@@ -426,9 +430,13 @@ var main = function(ex) {
 
     var option1, option2, option3, option4;
     function drawQ1() {
-        var question = ex.createParagraph(canvasWidth/2,canvasHeight*(6/10),
+        // There should be a make questio functio instead of making one
+        // for each question
+        var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+1);
+        var yOrigin = topMargin + (state.recursiveDepth+1) * 1.5 * lineHeight;
+        var question = ex.createParagraph(xOrigin, yOrigin,
                             ex.data.question1.question, {size: "large"});
-        var option1 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+30,
+        var option1 = ex.createParagraph(xOrigin, yOrigin+lineHeight,
                     ex.data.question1.options[0], {size: "large"}).on("click",
                     function() {
                         option1.style()["fontStyle"] = "italic";
@@ -439,7 +447,7 @@ var main = function(ex) {
                         submitQButton.enable();
                         console.log(ex.data.question1.selected);
                     });
-        var option2 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+60,
+        var option2 = ex.createParagraph(xOrigin, yOrigin+lineHeight*2,
                     ex.data.question1.options[1], {size: "large"}).on("click",
                     function() {
                         option1.style()["fontStyle"] = "normal";
@@ -450,7 +458,7 @@ var main = function(ex) {
                         submitQButton.enable();
                         console.log(ex.data.question1.selected);
                     });
-        var option3 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+90,
+        var option3 = ex.createParagraph(xOrigin, yOrigin+lineHeight*3,
                     ex.data.question1.options[2], {size: "large"}).on("click",
                     function() {
                         option1.style()["fontStyle"] = "normal";
@@ -461,7 +469,7 @@ var main = function(ex) {
                         submitQButton.enable();
                         console.log(ex.data.question1.selected);
                     });
-        var option4 = ex.createParagraph(canvasWidth/2+20, canvasHeight*(6/10)+120,
+        var option4 = ex.createParagraph(xOrigin, yOrigin+lineHeight*4,
                     ex.data.question1.options[3], {size: "large"}).on("click",
                     function() {
                         option1.style()["fontStyle"] = "normal";

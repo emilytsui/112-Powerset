@@ -29,7 +29,7 @@
         "questionNum": 0
     },
     "question1": {
-        "question": "1. What will the next recursive call be?",
+        "question": "What will the next recursive call be?",
         "options": ["a. powerset([6])", "b. powerset([6,2])", "c. powerset([2,8])", "d. powerset([8])"],
         "answer": "c",
         "selected": "z"
