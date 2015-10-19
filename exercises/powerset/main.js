@@ -126,11 +126,14 @@ var main = function(ex) {
             }
     }
 
-    function animateMoveElement(ele, x1, y1) {
+    function animateMoveElement(ele, x1, y1, fn) {
         function recurseMove(d0) {
             // console.log(ele.box())
             ele.show()
-            if (d0 >= d) return;
+            if (d0 >= d) {
+                fn();
+                return;
+            }
             ele.position(Math.round(x0+xd*d0), Math.round(y0+yd*d0))
             setTimeout(function(){
                 recurseMove(d0+1)
@@ -321,17 +324,17 @@ var main = function(ex) {
         //if base case just remove one header
         if (state.recursiveDepth == state.listLength) {
             //Base Case
-            ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
-                                 state.rectWidth, state.rectHeight);
+            //ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
+                                 // state.rectWidth, state.rectHeight);
             var s1 = "[[ ]]"
         } else {
-            ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
-                                 state.rectWidth, state.rectHeight);
+            //ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
+                                 // state.rectWidth, state.rectHeight);
 
             var s1 = xToString(thisCall.result);
         }
 
-        var xOrigin = sideMargin + blockWidth * state.recursiveDepth + 30;
+        var xOrigin = sideMargin + blockWidth * state.recursiveDepth;
         // var yOrigin = topMargin + state.recursiveDepth * 2.0 * lineHeight;
         var yOrigin = topMargin + (state.recursiveDepth * 3 - 1.5) * lineHeight;
 
@@ -341,13 +344,13 @@ var main = function(ex) {
             s1 = " = " + s1;
         }
 
-        //CHANGE******
-        var x0 = thisCall.h2.box().x+blockWidth-35
+        //Animated Move, +150 because alignment
+        var x0 = thisCall.h2.box().x+150
         var y0 = thisCall.h2.box().y
         //display the return value
         var h1 = ex.createHeader(x0, y0, s1,
                     {size:fontSize, textAlign:"left", transition:"fade"});
-        animateMoveElement(h1, xOrigin, yOrigin)
+        animateMoveElement(h1, xOrigin, yOrigin, function() {})
 
         //Doesn't set the block width to the final resulting list
         if (state.recursiveDepth != 0) h1.width(blockWidth);
