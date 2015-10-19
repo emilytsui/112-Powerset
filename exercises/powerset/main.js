@@ -63,7 +63,7 @@ var main = function(ex) {
                                   ex.data.code.display, ex.data.code);
     var sep = Array(Math.round(canvasWidth/6)).join("*")
     //////// Separater at the center
-    var separater = ex.createHeader(0, canvasHeight*(3/5), sep,
+    var separater = ex.createHeader(0, canvasHeight*(2/3), sep,
                                     {size:"small", textAlign:"left"})
 
 
@@ -134,12 +134,12 @@ var main = function(ex) {
             ele.position(Math.round(x0+xd*d0), Math.round(y0+yd*d0))
             setTimeout(function(){
                 recurseMove(d0+1)
-            }, 10)
+            }, 1)
         }
         console.log(ele.box())
         var x0 = ele.box().x
         var y0 = ele.box().y
-        var d = Math.max(Math.abs(x1-x0), Math.abs(y1-y0))
+        var d = Math.max(Math.abs(x1-x0), Math.abs(y1-y0))/2
         var xd = (x1-x0)/d
         var yd = (y1-y0)/d
         console.log(x0, y0, x1, y1, xd, yd, d)
@@ -265,8 +265,14 @@ var main = function(ex) {
             var h1 = ex.createHeader(xOrigin, yOrigin, s1,
                         {size:fontSize, textAlign:"right",
                          transition:"fade"});
+            var s2 = xToString([[]])
+            var h2 = ex.createHeader(xOrigin, yOrigin + lineHeight, s2,
+                                {size:fontSize, textAlign:"right",
+                                 transition:"fade"});
+            h2.width(blockWidth);
             h1.width(blockWidth);
             thisCall.h1 = h1;
+            thisCall.h2 = h2;
             return;
         }
 
@@ -317,16 +323,11 @@ var main = function(ex) {
             //Base Case
             ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
                                  state.rectWidth, state.rectHeight);
-            // thisCall.h1.hide();
             var s1 = "[[ ]]"
         } else {
             ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
                                  state.rectWidth, state.rectHeight);
-            // thisCall.h1.hide();
-            // thisCall.h2.hide();
-            // thisCall.h3.hide();
-            // thisCall.h4.hide();
-            // thisCall.h5.hide();
+
             var s1 = xToString(thisCall.result);
         }
 
@@ -340,24 +341,19 @@ var main = function(ex) {
             s1 = " = " + s1;
         }
 
+        //CHANGE******
+        var x0 = thisCall.h2.box().x+blockWidth-35
+        var y0 = thisCall.h2.box().y
         //display the return value
-        var h1 = ex.createHeader(xOrigin, yOrigin, s1,
+        var h1 = ex.createHeader(x0, y0, s1,
                     {size:fontSize, textAlign:"left", transition:"fade"});
+        animateMoveElement(h1, xOrigin, yOrigin)
 
         //Doesn't set the block width to the final resulting list
         if (state.recursiveDepth != 0) h1.width(blockWidth);
         else h1.width(canvasWidth);
         thisCall.h6 = thisCall.h1; //So we can remove the element later on
         thisCall.h1 = h1;
-
-        //We used .hide() to get the fade transition, but this removes it
-        // to avoid any unforseen complications
-        if (state.recursiveDepth != state.listLength) {
-            // thisCall.h2.remove();
-            // thisCall.h3.remove();
-            // thisCall.h4.remove();
-            // thisCall.h5.remove();
-        }
 
     }
 
