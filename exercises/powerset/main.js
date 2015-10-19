@@ -48,7 +48,7 @@ var main = function(ex) {
     var nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
                                     "Next").on("click", nextStep)
     var prevButton = ex.createButton(canvasWidth*(9/11)-60, canvasHeight*(9/10),
-                                     "Prev").on("click", prevStep)
+                                     "Prev").disable()//on("click", prevStep)
     //prevButton.disable(); //Not implemented correctly for right now
     var skipButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
                                      "Skip").on("click", skipStep)
@@ -133,6 +133,9 @@ var main = function(ex) {
 
     //perform appropriate action after prevButton is clicked
     function prevStep() { //don't think this is implemented correctly
+
+
+
         if (state.recursiveDepth <= 0){
             //Do nothing at depth 0
             return;
@@ -149,12 +152,12 @@ var main = function(ex) {
                 }
             }else{
                 //if next step is to merge
-                if (state.isMerging) {
-                    state.isMerging = false;
+                if (state.isSubstituting) {
+                    state.isSubstituting = false;
                 } else {
                 //Normal return
-                    drawMerge();//This may need changing as well.
-                    if (state.recursiveDepth != 0) state.isMerging = true;
+                    drawSubstitute();//This may need changing as well.
+                    if (state.recursiveDepth != 0) state.isSubstituting = true;
                     state.recursiveDepth++;
                 }
             }
@@ -183,13 +186,28 @@ var main = function(ex) {
             state.recursiveDepth++;
         } else {
             //if next step is to merge
-            if (state.isMerging) {
+            if (state.isSubstituting) {
+                drawSubstitute();
+                state.isSubstituting = false;
+                state.isAdding1 = true;
+            } else if (state.isAdding1){
+                drawAdd1();
+                state.isAdding1 = false;
+                state.isAdding2 = true;
+            } else if (state.isAdding2) {
+                drawAdd2();
+                state.isAdding2 = false;
+                state.isMerging = true;
+            }
+            else if (state.isMerging) {
                 drawMerge();
                 state.isMerging = false;
-            } else {
+            }
+             else
+            {
             //Normal return
                 drawReturn();
-                if (state.recursiveDepth != 0) state.isMerging = true;
+                if (state.recursiveDepth != 0) state.isSubstituting = true;
                 state.recursiveDepth--;
             }
         }
@@ -260,6 +278,7 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
+        console.log("drawReturn depth:")
         console.log(state.recursiveDepth);
         var thisCall = state.recursiveCalls[state.recursiveDepth];
 
@@ -322,7 +341,7 @@ var main = function(ex) {
     }
 
     //display the result after merge(or not) the first element with the returned value
-    function drawMerge() {
+    function drawSubstitute() {
 
         //remove header of the callee
         state.recursiveCalls[state.recursiveDepth+1].h1.hide();
@@ -349,7 +368,67 @@ var main = function(ex) {
         thisCall.h4 = h1;
         thisCall.h5 = h2;
 
+    }
 
+    function drawAdd1(){
+        console.log("drawAdd1 depth:")
+        console.log(state.recursiveDepth)
+        function addE(e, l) {
+            var l0 = [];
+            for (i = 0; i < l.length; i++) {
+                l0.push([e].concat(l[i]))
+            }
+            return l0;
+        }
+
+        function reviseH2H3() {
+            //Revise this calls' join headers (h2, h3)
+            var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
+            var firstElement = state.recursiveCalls[state.recursiveDepth].input[0];
+            state.recursiveCalls[state.recursiveDepth].h2.text(xToString(returningList));
+            state.recursiveCalls[state.recursiveDepth].h2.show();
+        }
+        //remove this call's join headers (h2, h3) and (h4, h5)
+        state.recursiveCalls[state.recursiveDepth].h4.hide();
+        state.recursiveCalls[state.recursiveDepth].h2.hide();
+        setTimeout(reviseH2H3(), 500);
+
+    }
+
+    function drawAdd2(){
+        console.log("drawAdd1 depth:")
+        console.log(state.recursiveDepth)
+        function addE(e, l) {
+            var l0 = [];
+            for (i = 0; i < l.length; i++) {
+                l0.push([e].concat(l[i]))
+            }
+            return l0;
+        }
+
+        function reviseH2H3() {
+            //Revise this calls' join headers (h2, h3)
+            var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
+            var firstElement = state.recursiveCalls[state.recursiveDepth].input[0];
+            state.recursiveCalls[state.recursiveDepth].h3.text(xToString(addE(firstElement, returningList)));
+            state.recursiveCalls[state.recursiveDepth].h3.show();
+        }
+        //remove this call's join headers (h2, h3) and (h4, h5)
+        state.recursiveCalls[state.recursiveDepth].h5.hide();
+        state.recursiveCalls[state.recursiveDepth].h3.hide();
+        setTimeout(reviseH2H3(), 500);
+
+    }
+
+    function drawMerge(){
+        function showMergeResult() {
+            var resultList = state.recursiveCalls[state.recursiveDepth].result;
+            state.recursiveCalls[state.recursiveDepth].h2.text(xToString(resultList));
+            state.recursiveCalls[state.recursiveDepth].h2.show();
+        }
+        state.recursiveCalls[state.recursiveDepth].h2.hide();
+        state.recursiveCalls[state.recursiveDepth].h3.hide();
+        setTimeout(showMergeResult(), 500);
     }
 
     var firstQuiz = true;
@@ -394,13 +473,13 @@ var main = function(ex) {
             state.recursiveDepth++;
         } else {
             //if next step is to merge
-            if (state.isMerging) {
-                drawMerge();
-                state.isMerging = false;
+            if (state.isSubstituting) {
+                drawSubstitute();
+                state.isSubstituting = false;
             } else {
             //Normal return
                 drawReturn();
-                if (state.recursiveDepth != 0) state.isMerging = true;
+                if (state.recursiveDepth != 0) state.isSubstituting = true;
                 state.recursiveDepth--;
             }
         }
@@ -451,7 +530,7 @@ var main = function(ex) {
         state.recursiveCalls = [];
         state.recursiveDepth = 0;
         state.isReturning = false;
-        state.isMerging = false;
+        state.isSubstituting = false;
         state.isQuizing = true;
 
         // powersetMain(generateList());
