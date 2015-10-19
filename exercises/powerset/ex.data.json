@@ -25,7 +25,11 @@
         "recursiveDepth": 0,
         "isReturning": false,
         "isMerging": false,
-        "questionNum": 0
+        "questionNum": 0,
+        "rectLeft": 0,
+        "rectTop": 0,
+        "rectWidth": 0,
+        "rectHeight": 0
     },
     "question1": {
         "question": "What will the next recursive call be?",

@@ -26,13 +26,14 @@ var main = function(ex) {
 
     // The state of our recursive visualization
     var state = ex.data.state
+    ex.graphics.ctx.fillStyle = 'grey';
 
     //////////////layout configuration
     var canvasWidth = ex.width();
     var canvasHeight = ex.height();
-    var topMargin = canvasHeight / 10;
-    var sideMargin = canvasWidth / 20;
-    var lineHeight = canvasHeight / 15;
+    var topMargin = canvasHeight / 25;
+    var sideMargin = canvasWidth / 25;
+    var lineHeight = canvasHeight / 18;
     var blockWidth = (canvasWidth - sideMargin * 2) / (state.listLength + 1);
     //+1 because recursive calls are one more than length of the input
     var fontSize = "small"
@@ -62,7 +63,7 @@ var main = function(ex) {
                                   ex.data.code.display, ex.data.code);
     var sep = Array(Math.round(canvasWidth/6)).join("*")
     //////// Separater at the center
-    var separater = ex.createHeader(0, canvasHeight/2, sep,
+    var separater = ex.createHeader(0, canvasHeight*(3/5), sep,
                                     {size:"small", textAlign:"left"})
 
 
@@ -127,6 +128,7 @@ var main = function(ex) {
 
     //generate recursiveCall data
     powersetMain(generateList())
+    nextStep(); //To show the initial call of function
     console.log(state.recursiveCalls)
 
     //perform appropriate action after prevButton is clicked
@@ -217,7 +219,7 @@ var main = function(ex) {
         var xOrigin = sideMargin + blockWidth * state.recursiveDepth;
         //times 1.5 because the height offirst line of a newblock is between
         //the height of second and third lines of the previous block
-        var yOrigin = topMargin + state.recursiveDepth * 1.5 * lineHeight;
+        var yOrigin = topMargin + state.recursiveDepth * 3 * lineHeight;
 
         //Base Case
         if (state.recursiveDepth == state.listLength) {
@@ -258,24 +260,45 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
+        console.log(state.recursiveDepth);
         var thisCall = state.recursiveCalls[state.recursiveDepth];
+
+        state.rectLeft = sideMargin + blockWidth * state.recursiveDepth + 30;
+        state.rectTop = topMargin + (state.recursiveDepth * 3) * lineHeight;
+        if (state.recursiveDepth == 0) {
+            // So it doesn't shade out the initial call to powerset
+            state.rectTop += lineHeight;
+        }
+        state.rectWidth = canvasWidth - sideMargin - state.rectLeft;
+        state.rectHeight = canvasHeight*(3/5) - state.rectTop;
 
         //if base case just remove one header
         if (state.recursiveDepth == state.listLength) {
             //Base Case
-            thisCall.h1.hide();
-            var s1 = "[ ]"
+            ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
+                                 state.rectWidth, state.rectHeight);
+            // thisCall.h1.hide();
+            var s1 = "[[ ]]"
         } else {
-            thisCall.h1.hide();
-            thisCall.h2.hide();
-            thisCall.h3.hide();
-            thisCall.h4.hide();
-            thisCall.h5.hide();
+            ex.graphics.ctx.fillRect(state.rectLeft, state.rectTop,
+                                 state.rectWidth, state.rectHeight);
+            // thisCall.h1.hide();
+            // thisCall.h2.hide();
+            // thisCall.h3.hide();
+            // thisCall.h4.hide();
+            // thisCall.h5.hide();
             var s1 = xToString(thisCall.result);
         }
 
         var xOrigin = sideMargin + blockWidth * state.recursiveDepth + 30;
-        var yOrigin = topMargin + state.recursiveDepth * 1.5 * lineHeight;
+        // var yOrigin = topMargin + state.recursiveDepth * 2.0 * lineHeight;
+        var yOrigin = topMargin + (state.recursiveDepth * 3 - 1.5) * lineHeight;
+
+        if (state.recursiveDepth == 0) { // Correctly formats return value
+            xOrigin += canvasWidth*(1/4);
+            yOrigin += lineHeight * 1.5;
+            s1 = " = " + s1;
+        }
 
         //display the return value
         var h1 = ex.createHeader(xOrigin, yOrigin, s1,
@@ -284,15 +307,16 @@ var main = function(ex) {
         //Doesn't set the block width to the final resulting list
         if (state.recursiveDepth != 0) h1.width(blockWidth);
         else h1.width(canvasWidth);
+        thisCall.h6 = thisCall.h1; //So we can remove the element later on
         thisCall.h1 = h1;
 
         //We used .hide() to get the fade transition, but this removes it
         // to avoid any unforseen complications
         if (state.recursiveDepth != state.listLength) {
-            thisCall.h2.remove();
-            thisCall.h3.remove();
-            thisCall.h4.remove();
-            thisCall.h5.remove();
+            // thisCall.h2.remove();
+            // thisCall.h3.remove();
+            // thisCall.h4.remove();
+            // thisCall.h5.remove();
         }
 
     }
@@ -308,9 +332,9 @@ var main = function(ex) {
         var depth = state.recursiveDepth;
         // I think I have solved the height problem for merge.
         // Just for future reference I kept the original code in comments
-        var yOrigin1 = topMargin + (state.recursiveDepth * 1.5+1) * lineHeight
+        var yOrigin1 = topMargin + (state.recursiveDepth * 3 + 1) * lineHeight
         //topMargin + (depth + 1) * (0.5*depth)*lineHeight + 34;
-        var yOrigin2 = topMargin + (state.recursiveDepth * 1.5+2) * lineHeight
+        var yOrigin2 = topMargin + (state.recursiveDepth * 3 + 2) * lineHeight
         //topMargin + (depth + 1) * (0.5*depth)*lineHeight + 66;
         // if (depth%2 == 1) { //hacky fix for the height of the appended lists
         //     yOrigin1 += 15;
@@ -403,8 +427,21 @@ var main = function(ex) {
     // Removes the visualization elements
     // Adds the necessary quiz elements
     function startQuiz() {
-        var thisCall = state.recursiveCalls[0];
-        thisCall.h1.remove();
+        ex.graphics.ctx.fillStyle = 'white';
+        ex.graphics.ctx.fillRect(0,0,canvasWidth, canvasHeight);
+        ex.graphics.ctx.fillStyle = 'grey';
+
+        // Removing all the remaining headers on the screen
+        for (var i = 0; i < state.recursiveCalls.length; i++) {
+            var obj = state.recursiveCalls[i];
+            console.log(obj.h1.text());
+            if (obj.h1 != undefined) obj.h1.remove();
+            if (obj.h2 != undefined) obj.h2.remove();
+            if (obj.h3 != undefined) obj.h3.remove();
+            if (obj.h4 != undefined) obj.h4.remove();
+            if (obj.h5 != undefined) obj.h5.remove();
+            if (obj.h6 != undefined) obj.h6.remove();
+        }
         prevButton.remove();
         skipButton.remove();
         nextButton.remove();
@@ -441,7 +478,7 @@ var main = function(ex) {
             }
         }
         var xOrigin = canvasWidth/2;
-        var yOrigin = canvasHeight/2+lineHeight;
+        var yOrigin = canvasHeight*(4/7)+lineHeight;
         var question = ex.createParagraph(xOrigin, yOrigin,
                             ex.data.question1.question, {size: "large"});
 
