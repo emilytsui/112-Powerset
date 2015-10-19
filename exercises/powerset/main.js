@@ -126,6 +126,26 @@ var main = function(ex) {
             }
     }
 
+    function animateMoveElement(ele, x1, y1) {
+        function recurseMove(d0) {
+            // console.log(ele.box())
+            ele.show()
+            if (d0 >= d) return;
+            ele.position(Math.round(x0+xd*d0), Math.round(y0+yd*d0))
+            setTimeout(function(){
+                recurseMove(d0+1)
+            }, 10)
+        }
+        console.log(ele.box())
+        var x0 = ele.box().x
+        var y0 = ele.box().y
+        var d = Math.max(Math.abs(x1-x0), Math.abs(y1-y0))
+        var xd = (x1-x0)/d
+        var yd = (y1-y0)/d
+        console.log(x0, y0, x1, y1, xd, yd, d)
+        recurseMove(0)
+    }
+
     //generate recursiveCall data
     powersetMain(generateList())
     nextStep(); //To show the initial call of function
@@ -257,6 +277,7 @@ var main = function(ex) {
                                  transition:"fade"});
         h1.width(blockWidth);
         thisCall.h1 = h1;
+
 
         //[ ] +
         var s2 = "[ ] +"
