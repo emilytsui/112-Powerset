@@ -67,16 +67,22 @@ var main = function(ex) {
     //                                 {size:"small", textAlign:"left"})
 
 
+	/////// Animation Configuration
+	var animationDuration = 200;
+	var defaultAnimaitonDuration = 200;
+
     //return a list of integer of length listLength, values from 0 to 9
     function generateList() {
         var arr = [];
+        var isChar = true;
         for (i = 0; i < state.listLength; i++) {
             n = Math.round(Math.random() * 10);
-            while(arr.indexOf(n) != -1) {
-            //Makes sure no item is repeated in array
-                n = Math.round(Math.random() * 10);
-            }
-            arr.push(n);
+            //It's OK to have repeated element
+            var e;
+        	if (isChar) e = String.fromCharCode(65+n); 
+        	else e = Math.floor(Math.random() * 10);
+
+            arr.push(e);
         }
         return(arr);
     }
@@ -99,25 +105,27 @@ var main = function(ex) {
 
     //if x is of type number, string or list, xToString convert x to string
     function xToString(x) {
-        if (typeof(x) == "number")
-            return x.toString();
-        else if (typeof(x) == "string")
-            return "\""+x+"\"";
-        else {
+    	if (typeof(x) == "object") {
             // x is a list
             var str = "[";
             for (var i = 0; i < x.length; i++) {
                 str += xToString(x[i]);
                 if (i != x.length-1) {
-                    str += ", ";
+                    str += ",";
                 }
             }
             str += "]";
             return str;
         }
+        else if (x == "_")
+        	return "___";
+        else if (typeof(x) == "number")
+            return x.toString();
+        else if (typeof(x) == "string")
+            return "\""+x+"\"";
     }
     //Test
-    // console.log(xToString([[],[1,2],"ss"]))
+    // console.log(xToString(["_"]))
 
     function powersetMain(l) {
         if (l.length == 0) {
@@ -151,12 +159,13 @@ var main = function(ex) {
             ele.position(Math.round(x0+xd*d0), Math.round(y0+yd*d0));
             setTimeout(function(){
                 recurseMove(d0+1);
-            }, 1);
+            }, timeInterval);
         }
-        // console.log(ele.box())
+
         var x0 = ele.box().x;
         var y0 = ele.box().y;
         var d = Math.max(Math.abs(x1-x0), Math.abs(y1-y0))/2;
+        var timeInterval = Math.round(animationDuration / d);
         var xd = (x1-x0)/d;
         var yd = (y1-y0)/d;
         // console.log(x0, y0, x1, y1, xd, yd, d)
@@ -322,6 +331,7 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
+    	nextButton.disable()
         console.log("drawReturn depth: " + state.recursiveDepth)
         var thisCall = state.recursiveCalls[state.recursiveDepth];
 
@@ -363,7 +373,7 @@ var main = function(ex) {
         //display the return value
         var h1 = ex.createHeader(x0, y0, s1,
                     {size:fontSize, textAlign:"left", transition:"fade"});
-        animateMoveElement(h1, xOrigin, yOrigin, function() {})
+        animateMoveElement(h1, xOrigin, yOrigin, function() {nextButton.enable()})
 
         //Doesn't set the block width to the final resulting list
         if (state.recursiveDepth != 0) h1.width(blockWidth);
@@ -407,6 +417,9 @@ var main = function(ex) {
         nextButton.disable();
         //attempts to prevent timing issues when pressing next too fast
         console.log("drawAdd1 depth: " + state.recursiveDepth)
+
+        var thisCall = state.recursiveCalls[state.recursiveDepth];
+
         function addE(e, l) {
             var l0 = [];
             for (i = 0; i < l.length; i++) {
@@ -414,25 +427,52 @@ var main = function(ex) {
             }
             return l0;
         }
-        function reviseH2H3() {
+        function reviseH2() {
             console.log("revising in drawAdd1");
-            //Revise this calls' join headers (h2, h3)
+            //Revise this calls' join headers h2
             var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
-            var firstElement = state.recursiveCalls[state.recursiveDepth].input[0];
-            state.recursiveCalls[state.recursiveDepth].h2.text(xToString(returningList));
-            state.recursiveCalls[state.recursiveDepth].h2.show();
+            var firstElement = thisCall.input[0];
+            thisCall.h2.text(xToString(returningList));
+            thisCall.h2.show();
             nextButton.enable();
         }
-        //remove this call's join headers (h2, h3) and (h4, h5)
-        state.recursiveCalls[state.recursiveDepth].h4.hide();
-        state.recursiveCalls[state.recursiveDepth].h2.hide();
-        setTimeout(reviseH2H3(), 500);
+        //remove this call's join headers h2 h4
+        thisCall.h4.hide();
+        thisCall.h2.hide();
+        setTimeout(reviseH2, 500);
 
     }
 
+    // function drawAdd2(){
+    //     nextButton.disable();
+    //     var thisCall = state.recursiveCalls[state.recursiveDepth];
+    //     console.log("drawAdd2 depth: " + state.recursiveDepth);
+    //     function addE(e, l) {
+    //         var l0 = [];
+    //         for (i = 0; i < l.length; i++) {
+    //             l0.push([e].concat(l[i]))
+    //         }
+    //         return l0;
+    //     }
+
+    //     function reviseH3() {
+    //         console.log("revising in drawAdd2");
+    //         //Revise this calls' join headers h3
+    //         var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
+    //         var firstElement = thisCall.input[0];
+    //         thisCall.h3.text(xToString(addE(firstElement, returningList)));
+    //         thisCall.h3.show();
+    //         nextButton.enable();
+    //     }
+    //     //remove this call's join headers h3 h5
+    //     thisCall.h5.hide();
+    //     thisCall.h3.hide();
+    //     setTimeout(reviseH3(), 500);
+    // }
+
     function drawAdd2(){
-        nextButton.disable();
-        console.log("drawAdd1 depth: " + state.recursiveDepth);
+    	nextButton.disable();
+    	console.log("drawAdd2 depth: " + state.recursiveDepth);
         function addE(e, l) {
             var l0 = [];
             for (i = 0; i < l.length; i++) {
@@ -441,19 +481,72 @@ var main = function(ex) {
             return l0;
         }
 
-        function reviseH2H3() {
-            console.log("revising in drawAdd2");
-            //Revise this calls' join headers (h2, h3)
-            var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
-            var firstElement = state.recursiveCalls[state.recursiveDepth].input[0];
-            state.recursiveCalls[state.recursiveDepth].h3.text(xToString(addE(firstElement, returningList)));
-            state.recursiveCalls[state.recursiveDepth].h3.show();
-            nextButton.enable();
+        function integrateH3(){
+        	for (var i = 0; i < fliers.length; i++)
+        		fliers[i].remove();
+        	thisCall.h5.remove();
+        	thisCall.h3.text(xToString(addE(firstElement, returningList)));
+            thisCall.h3.show();
         }
-        //remove this call's join headers (h2, h3) and (h4, h5)
-        state.recursiveCalls[state.recursiveDepth].h5.hide();
-        state.recursiveCalls[state.recursiveDepth].h3.hide();
-        setTimeout(reviseH2H3(), 500);
+
+        //calculate number of characters before ith element in l
+        //assume elements all have length 1
+        //formula in this function are empirical result
+        //and are subject to changes
+        function xd(l, index) {
+        	var k = 0;
+        	for (var j = 0; j < index; j++)
+
+        		k += xToString(l[j]).length-2.8;
+
+        	return k+1+index;
+        }
+        var thisCall = state.recursiveCalls[state.recursiveDepth];
+        var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
+        var firstElement = thisCall.input[0];
+        //fontwidth is subject to changes
+        var fontWidth = 10;
+        var fliers = [];
+        var initX = thisCall.h5.box().x - fontWidth*3;
+        var initY = thisCall.h3.box().y;
+
+        thisCall.h5.hide();
+        thisCall.h5.text(xToString(addE("_", returningList)));
+        thisCall.h5.show();
+
+        //make animatio slower for this part
+        animationDuration = 600;
+
+        function fly() {
+        	console.log("fly")
+	        thisCall.h3.hide();
+	    	//the element of the list that flies into the empty space
+
+	        for (var i = 0; i < returningList.length; i++) {
+	        	var flier = ex.createHeader(initX, initY, xToString(firstElement), {size: fontSize});
+	        	var destX = thisCall.h5.box().x;
+	        	destX = destX + xd(addE("_", returningList), i)*fontWidth;
+	        	animateMoveElement(flier, destX, initY, function(){});
+	        	fliers.push(flier);
+	        }
+	        setTimeout(moveBack, 2500)
+        }
+        setTimeout(fly, 1000);
+
+        function moveBack() {
+	        //move h5 back to the place of h3; remove h5 and fliers, show H3.
+	        console.log("moving")
+	        var xMoveBack = xToString(addE(1,thisCall.input)).length*fontWidth-45;
+	        animateMoveElement(thisCall.h5, thisCall.h5.box().x - xMoveBack, initY, function(){
+	        	integrateH3();
+	        	nextButton.enable();
+	        	animationDuration = defaultAnimaitonDuration;
+	        });
+	        for (var i = 0; i < fliers.length; i++) {
+	        	animateMoveElement(fliers[i], fliers[i].box().x - xMoveBack, initY, function(){});
+	        }
+        }
+
     }
 
     function drawMerge(){
@@ -465,7 +558,7 @@ var main = function(ex) {
         }
         state.recursiveCalls[state.recursiveDepth].h2.hide();
         state.recursiveCalls[state.recursiveDepth].h3.hide();
-        setTimeout(showMergeResult(), 500);
+        setTimeout(showMergeResult, 500);
     }
 
     var firstQuiz = true;
