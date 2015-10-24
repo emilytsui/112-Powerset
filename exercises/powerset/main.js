@@ -74,7 +74,7 @@ var main = function(ex) {
     //return a list of integer of length listLength, values from 0 to 9
     function generateList() {
         var arr = [];
-        var isChar = true;
+        var isChar = Math.random()<.5;
         for (i = 0; i < state.listLength; i++) {
             n = Math.round(Math.random() * 10);
             //It's OK to have repeated element
