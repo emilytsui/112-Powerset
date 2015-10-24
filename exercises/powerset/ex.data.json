@@ -36,9 +36,10 @@
     },
     "question1": {
         "question": "What will the next recursive call be?",
-        "options": ["a. powerset([6])", "b. powerset([6,2])", "c. powerset([2,8])", "d. powerset([8])"],
-        "answer": "2",
-        "selected": "z"
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "finalCorrect": false
     },
     "oldQuestion1": {
         "question": "1. What is the resulting list if we call powerset([5,12,3]) using the same powerset function as defined below?",

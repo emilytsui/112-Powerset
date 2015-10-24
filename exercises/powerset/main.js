@@ -63,8 +63,8 @@ var main = function(ex) {
                                   ex.data.code.display, ex.data.code);
     var sep = Array(Math.round(canvasWidth/6)).join("*")
     //////// Separater at the center
-    var separater = ex.createHeader(0, canvasHeight*(2/3), sep,
-                                    {size:"small", textAlign:"left"})
+    // var separater = ex.createHeader(0, canvasHeight*(10/16), sep,
+    //                                 {size:"small", textAlign:"left"})
 
 
     //return a list of integer of length listLength, values from 0 to 9
@@ -79,6 +79,21 @@ var main = function(ex) {
             arr.push(n);
         }
         return(arr);
+    }
+
+    function powerset(a) {
+        if (a.length == 0) {
+            return [[]];
+        }
+        else {
+            var allSubsets = [];
+            var recur = powerset(a.slice(1,a.length))
+            for (var i = 0; i < recur.length; i++) {
+                allSubsets.push(recur[i]);
+                allSubsets.push([a[0]].concat(recur[i]));
+            }
+        }
+        return allSubsets;
     }
 
 
@@ -102,8 +117,7 @@ var main = function(ex) {
         }
     }
     //Test
-    //console.log(xToString([[],[1,2],"ss"]))
-
+    // console.log(xToString([[],[1,2],"ss"]))
 
     function powersetMain(l) {
         if (l.length == 0) {
@@ -129,24 +143,24 @@ var main = function(ex) {
     function animateMoveElement(ele, x1, y1, fn) {
         function recurseMove(d0) {
             // console.log(ele.box())
-            ele.show()
+            ele.show();
             if (d0 >= d) {
                 fn();
                 return;
             }
-            ele.position(Math.round(x0+xd*d0), Math.round(y0+yd*d0))
+            ele.position(Math.round(x0+xd*d0), Math.round(y0+yd*d0));
             setTimeout(function(){
-                recurseMove(d0+1)
-            }, 1)
+                recurseMove(d0+1);
+            }, 1);
         }
-        console.log(ele.box())
-        var x0 = ele.box().x
-        var y0 = ele.box().y
-        var d = Math.max(Math.abs(x1-x0), Math.abs(y1-y0))/2
-        var xd = (x1-x0)/d
-        var yd = (y1-y0)/d
-        console.log(x0, y0, x1, y1, xd, yd, d)
-        recurseMove(0)
+        // console.log(ele.box())
+        var x0 = ele.box().x;
+        var y0 = ele.box().y;
+        var d = Math.max(Math.abs(x1-x0), Math.abs(y1-y0))/2;
+        var xd = (x1-x0)/d;
+        var yd = (y1-y0)/d;
+        // console.log(x0, y0, x1, y1, xd, yd, d)
+        recurseMove(0);
     }
 
     //generate recursiveCall data
@@ -308,8 +322,7 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
-        console.log("drawReturn depth:")
-        console.log(state.recursiveDepth);
+        console.log("drawReturn depth: " + state.recursiveDepth)
         var thisCall = state.recursiveCalls[state.recursiveDepth];
 
         state.rectLeft = sideMargin + blockWidth * state.recursiveDepth + 30;
@@ -391,8 +404,9 @@ var main = function(ex) {
     }
 
     function drawAdd1(){
-        console.log("drawAdd1 depth:")
-        console.log(state.recursiveDepth)
+        nextButton.disable();
+        //attempts to prevent timing issues when pressing next too fast
+        console.log("drawAdd1 depth: " + state.recursiveDepth)
         function addE(e, l) {
             var l0 = [];
             for (i = 0; i < l.length; i++) {
@@ -400,13 +414,14 @@ var main = function(ex) {
             }
             return l0;
         }
-
         function reviseH2H3() {
+            console.log("revising in drawAdd1");
             //Revise this calls' join headers (h2, h3)
             var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
             var firstElement = state.recursiveCalls[state.recursiveDepth].input[0];
             state.recursiveCalls[state.recursiveDepth].h2.text(xToString(returningList));
             state.recursiveCalls[state.recursiveDepth].h2.show();
+            nextButton.enable();
         }
         //remove this call's join headers (h2, h3) and (h4, h5)
         state.recursiveCalls[state.recursiveDepth].h4.hide();
@@ -416,8 +431,8 @@ var main = function(ex) {
     }
 
     function drawAdd2(){
-        console.log("drawAdd1 depth:")
-        console.log(state.recursiveDepth)
+        nextButton.disable();
+        console.log("drawAdd1 depth: " + state.recursiveDepth);
         function addE(e, l) {
             var l0 = [];
             for (i = 0; i < l.length; i++) {
@@ -427,20 +442,22 @@ var main = function(ex) {
         }
 
         function reviseH2H3() {
+            console.log("revising in drawAdd2");
             //Revise this calls' join headers (h2, h3)
             var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
             var firstElement = state.recursiveCalls[state.recursiveDepth].input[0];
             state.recursiveCalls[state.recursiveDepth].h3.text(xToString(addE(firstElement, returningList)));
             state.recursiveCalls[state.recursiveDepth].h3.show();
+            nextButton.enable();
         }
         //remove this call's join headers (h2, h3) and (h4, h5)
         state.recursiveCalls[state.recursiveDepth].h5.hide();
         state.recursiveCalls[state.recursiveDepth].h3.hide();
         setTimeout(reviseH2H3(), 500);
-
     }
 
     function drawMerge(){
+        console.log("merging");
         function showMergeResult() {
             var resultList = state.recursiveCalls[state.recursiveDepth].result;
             state.recursiveCalls[state.recursiveDepth].h2.text(xToString(resultList));
@@ -461,10 +478,6 @@ var main = function(ex) {
             else{
                 //Remove question
                 questionObjects.question.remove();
-                //Remove ansers
-                for (var i = 0; i < questionObjects.options.length; i++) {
-                    questionObjects.options[i].remove();
-                }
             }
         console.log(state.recursiveDepth);
         if (state.recursiveDepth == state.listLength + 1) {
@@ -507,18 +520,28 @@ var main = function(ex) {
 
     var nextQButton;
     var submitQButton;
+    var quizList = generateList();
+    ex.data.state.quizList = quizList;
+    var q1Dropdown;
     var questionObjects = {};
 
     // Checks if the submitted answer to a question in quiz mode is correct
     function submitQuestion() {
         submitQButton.disable();
+        q1Dropdown.disable();
+        nextQuestion();
         if (state.questionNum == 1) {
+            console.log(ex.data.question1.answer, ex.data.question1.selected);
             if (ex.data.question1.answer == ex.data.question1.selected) {
+                ex.data.question1.finalCorrect = true;
                 ex.showFeedback("Correct!");
             }
-            else ex.showFeedback("Incorrect");
+            else {
+                ex.data.question1.finalCorrect = false;
+                ex.showFeedback("Incorrect");
+            }
+            state.recursiveCalls[state.recursiveDepth-1].h1.hide();
         }
-
         nextQButton.enable();
     }
 
@@ -551,45 +574,75 @@ var main = function(ex) {
         state.recursiveDepth = 0;
         state.isReturning = false;
         state.isSubstituting = false;
-        state.isQuizing = true;
+        state.isQuizzing = true;
 
-        // powersetMain(generateList());
-        powersetMain([6,2,8]); // hardcoded temporarily
+        console.log(quizList);
+        powersetMain(quizList);
         nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
                                       "Next").on("click", nextQuestion);
         submitQButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
                                         "Submit").on("click", submitQuestion);
         submitQButton.disable();
+        nextQuestion();
     }
 
+    //Generates answers for question 1 of the quiz
+    function genQ1Answers(fullList, numSelections) {
+        pset = powerset(fullList);
+        // The correct answer for Q1
+        correct = fullList.slice(1,fullList.length);
+        var selections = []
+        cIndex = Math.round(Math.random() * (numSelections-1));
 
+        // keep pushing to selections until we get enough options to fill it
+        while(selections.length != 4) {
+            n = Math.round(Math.random() * (pset.length-1));
+            if ( pset[n].length < fullList.length &&
+                 xToString(pset[n]) != xToString(correct) &&
+                 selections.indexOf(pset[n]) == -1) {
+                selections.push(pset[n]);
+            }
+        }
+        selections[cIndex] = correct;
+        ex.data.question1.answer = cIndex;
+
+        for (var i = 0; i < selections.length; i++) {
+            ex.data.question1.options.push("powerset( [" + selections[i] + "] )");
+        }
+    }
 
     function drawQ1() {
-        var answerOptions = [];
-        function clickOnAnswer(n) {
+        genQ1Answers(quizList, 4);
+        console.log(xToString(ex.data.question1.options));
+        var elements = {};
+        for (var i = 0; i < ex.data.question1.options.length; i++) {
+            elements[ex.data.question1.options[i]] = q1Select(i);
+        }
+
+        function q1Select(i) {
             return function() {
-                for (i = 0; i < numberOfAnswers; i++) {
-                    answerOptions[i].style({fontStyle: "normal"});
-                }
-                answerOptions[n].style({fontStyle: "italic"});
-                ex.data.question1.selected = n;
+                ex.data.question1.selected = i;
                 submitQButton.enable();
             }
         }
-        var xOrigin = canvasWidth/2;
-        var yOrigin = canvasHeight*(4/7)+lineHeight;
-        var question = ex.createParagraph(xOrigin, yOrigin,
+
+        //coordinates of topleft of blocks
+        var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 1);
+        //times 1.5 because the height offirst line of a newblock is between
+        //the height of second and third lines of the previous block
+        var yOrigin = topMargin + (state.recursiveDepth + 1) * 3 * lineHeight;
+
+        // Make a dropdown
+        q1Dropdown = ex.createDropdown(xOrigin,yOrigin,"Select One", {
+            elements: elements
+        });
+
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question1.question, {size: "large"});
 
-        var numberOfAnswers = 4;
-        for (i = 0; i < numberOfAnswers; i++) {
-            option = ex.createParagraph(xOrigin, yOrigin+lineHeight*(i+1),
-                    ex.data.question1.options[i], {size: "large"});
-            option.on("click", clickOnAnswer(i));
-            answerOptions.push(option);
-        }
         questionObjects.question = question;
-        questionObjects.options = answerOptions;
     }
 
 
