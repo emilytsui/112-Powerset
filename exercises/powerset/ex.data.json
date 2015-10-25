@@ -54,5 +54,21 @@
         "selected": -1,
         "complete": false,
         "finalCorrect": false
+    },
+    "question3": {
+        "question": "What will the list at this location be?",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
+    },
+    "question4": {
+        "question": "What will the next recursive call be?",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
     }
 }

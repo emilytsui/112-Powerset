@@ -715,6 +715,32 @@ var main = function(ex) {
             ex.data.question2.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
+        else if (state.questionNum == 3 && ex.data.question3.complete == false) {
+            q3Dropdown.disable();
+            if (ex.data.question3.answer == ex.data.question3.selected) {
+                ex.data.question3.finalCorrect = true;
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            }
+            else {
+                ex.data.question3.finalCorrect = false;
+                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            }
+            ex.data.question3.complete = true;
+            return; // so they can reflect on answer before moving on to next step
+        }        
+        else if (state.questionNum == 4 && ex.data.question4.complete == false) {
+            q4Dropdown.disable();
+            if (ex.data.question4.answer == ex.data.question4.selected) {
+                ex.data.question4.finalCorrect = true;
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            }
+            else {
+                ex.data.question4.finalCorrect = false;
+                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            }
+            ex.data.question4.complete = true;
+            return; // so they can reflect on answer before moving on to next step
+        }
 
         console.log(state.recursiveDepth);
         if (state.recursiveDepth == state.listLength + 1) {
@@ -751,12 +777,18 @@ var main = function(ex) {
             drawQ2();
         if (state.questionNum == 2 && ex.data.question2.complete == true)
             drawQ3();
+        if (state.questionNum == 3 && ex.data.question3.complete == true)
+            drawQ4();
+        if (state.questionNum == 4 && ex.data.question4.complete == true)
+            drawQ5();
     }
 
     var nextQButton;
     var quizList = generateList();
     ex.data.state.quizList = quizList;
     var q2Dropdown;
+    var q3Dropdown;     
+    var q4Dropdown;   
     var questionObjects = {};
 
     // Removes the visualization elements
@@ -824,7 +856,7 @@ var main = function(ex) {
 
     }
 
-    //Generates answers for question 1 of the quiz
+    //Generates answers for question 2 of the quiz
     function genQ2Answers(fullList, numSelections) {
         pset = powerset(fullList);
         // The correct answer for Q2
@@ -833,7 +865,7 @@ var main = function(ex) {
         cIndex = Math.round(Math.random() * (numSelections-1));
 
         // keep pushing to selections until we get enough options to fill it
-        while(selections.length != 4) {
+        while(selections.length != numSelections) {
             n = Math.round(Math.random() * (pset.length-1));
             if ( pset[n].length < fullList.length &&
                  xToString(pset[n]) != xToString(correct) &&
@@ -889,11 +921,143 @@ var main = function(ex) {
         questionObjects.question = question;
     }
 
-    function drawQ3() {
+    //Generates answers for question 3 of the quiz
+    function genQ3Answers(fullList, numSelections) {
+        pset = powerset(fullList);
+        // The correct answer for Q3
+        correct = [fullList[1]];
+        var selections = []
+        cIndex = Math.round(Math.random() * (numSelections-1));
+
+        // keep pushing to selections until we get enough options to fill it
+        while(selections.length != numSelections) {
+            n = Math.round(Math.random() * (pset.length-1));
+            if ( pset[n].length < fullList.length &&
+                 xToString(pset[n]) != xToString(correct) &&
+                 selections.indexOf(pset[n]) == -1) {
+                selections.push(pset[n]);
+            }
+        }
+        selections[cIndex] = correct;
+        ex.data.question3.answer = cIndex;
+
+        for (var i = 0; i < selections.length; i++) {
+            ex.data.question3.options.push("[" + selections[i] + "]");
+        }
+    }
+
+    // Draw Question 3 of Quiz mode
+    function drawQ3 () {
         q2Dropdown.remove();
         questionObjects.question.remove();
         state.questionNum = 3;
+        nextQButton.disable();
+        genQ3Answers(quizList, 4);
+        console.log(xToString(ex.data.question3.options));
+        var elements = {};
+        for (var i = 0; i < ex.data.question3.options.length; i++) {
+            elements[ex.data.question3.options[i]] = q3Select(i);
+        }
+
+        function q3Select(i) {
+            return function() {
+                ex.data.question3.selected = i;
+                nextQButton.enable();
+            }
+        }
+
+        //coordinates of topleft of blocks
+        var xOrigin = sideMargin + blockWidth * state.recursiveDepth;
+        //times 1.5 because the height offirst line of a newblock is between
+        //the height of second and third lines of the previous block
+        var yOrigin = topMargin + state.recursiveDepth * 3 * lineHeight;
+
+        // Make a dropdown
+        q3Dropdown = ex.createDropdown(xOrigin-45 ,yOrigin-35,"Choose the answer", {
+            elements: elements
+        });//The current coordinate heree is hardcoded. May be bugggy.
+
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var question = ex.createParagraph(xQuestion, yQuestion,
+                            ex.data.question3.question, {size: "large"});
+
+        questionObjects.question = question;
     }
 
+    //Generates answers for question 4 of the quiz
+    function genQ4Answers(fullList, numSelections) {
+        pset = powerset(fullList);
+        // The correct answer for Q2
+        correct = fullList.slice(3,fullList.length);
+        // The answer is implemented in a way such that
+        // lists longer than 3 can also be used for quiz.
+        var selections = []
+        cIndex = Math.round(Math.random() * (numSelections-1));
 
+        // keep pushing to selections until we get enough options to fill it
+        while(selections.length != numSelections) {
+            n = Math.round(Math.random() * (pset.length-1));
+            if ( pset[n].length < fullList.length &&
+                 xToString(pset[n]) != xToString(correct) &&
+                 selections.indexOf(pset[n]) == -1) {
+                selections.push(pset[n]);
+            }
+        }
+        selections[cIndex] = correct;
+        ex.data.question4.answer = cIndex;
+
+        for (var i = 0; i < selections.length; i++) {
+            ex.data.question4.options.push("powerset( [" + selections[i] + "] )");
+        }
+    }
+
+   // Draw Question 4 of Quiz mode
+    function drawQ4 () {
+        q3Dropdown.remove();
+        questionObjects.question.remove();
+        state.questionNum = 4;
+        nextQButton.disable();
+        genQ4Answers(quizList, 4);
+        console.log(xToString(ex.data.question4.options));
+        var elements = {};
+        for (var i = 0; i < ex.data.question4.options.length; i++) {
+            elements[ex.data.question4.options[i]] = q4Select(i);
+        }
+
+        function q4Select(i) {
+            return function() {
+                ex.data.question4.selected = i;
+                nextQButton.enable();
+            }
+        }
+
+        //coordinates of topleft of blocks
+        var xOrigin = sideMargin + blockWidth * state.recursiveDepth;
+        //times 1.5 because the height offirst line of a newblock is between
+        //the height of second and third lines of the previous block
+        var yOrigin = topMargin + state.recursiveDepth * 3 * lineHeight;
+
+        // Make a dropdown
+        q4Dropdown = ex.createDropdown(xOrigin,yOrigin,"Choose the answer", {
+            elements: elements
+        });
+        console.log(q4Dropdown);
+
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var question = ex.createParagraph(xQuestion, yQuestion,
+                            ex.data.question3.question, {size: "large"});
+
+        questionObjects.question = question;
+    }
+
+       // Draw Question 5 of Quiz mode
+    function drawQ5 () {
+        q4Dropdown.remove();
+        questionObjects.question.remove();
+        state.questionNum = 5;
+        nextQButton.disable();
+
+    }
 };
