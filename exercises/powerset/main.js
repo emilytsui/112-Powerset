@@ -789,6 +789,7 @@ var main = function(ex) {
         }
     }
 
+    // Draws question 2 of quiz mode
     function drawQ2() {
         q1Input.remove();
         questionObjects.question.remove();
