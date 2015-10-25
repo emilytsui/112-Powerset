@@ -22,6 +22,7 @@
     "state": {
         "listLength": 3,
         "recursiveCalls": [],
+        "prevFns": [],
         "recursiveDepth": 0,
         "isReturning": false,
         "isSubstituting": false,
