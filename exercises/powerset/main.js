@@ -324,6 +324,7 @@ var main = function(ex) {
     //perform appropriate action after skipButton is clicked
     function skipStep() {
         clearUp();
+        //generate input and result header
         for (var i = 0; i < state.listLength+1; i++){
 
             var xOrigin = sideMargin + blockWidth * i;
@@ -411,7 +412,7 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
-    	// nextButton.disable()
+    	nextButton.disable()
         console.log("drawReturn depth: " + state.recursiveDepth)
         var thisCall = state.recursiveCalls[state.recursiveDepth];
 
@@ -513,7 +514,6 @@ var main = function(ex) {
         function reviseH2() {
             console.log("revising in drawAdd1");
             //Revise this calls' join headers h2
-            console.log(state.recursiveCalls[state.recursiveDepth+1])
             var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
             var firstElement = thisCall.input[0];
             thisCall.h2.text(xToString(returningList));
