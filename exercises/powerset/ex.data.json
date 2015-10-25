@@ -74,7 +74,7 @@
         "finalCorrect": false
     },
     "question5": {
-        "question": "",
+        "question": "What will be the result of this last recursive call?",
         "options": [],
         "answer": -1,
         "selected": -1,
