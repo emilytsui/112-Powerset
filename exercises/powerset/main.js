@@ -87,7 +87,7 @@ var main = function(ex) {
         state.isAdding1 = false;
         state.isAdding2 = false;
 
-        //Remove every header
+        //Remove every header in the teaching part
         for (var i = 0; i < state.listLength+1; i++) {
             var thisCall = state.recursiveCalls[i];
             try{
