@@ -285,7 +285,7 @@ var main = function(ex) {
             reverseFn(function(){
                 state.recursiveDepth--;
             })
-            //// 
+            ////
             //recursive call
             drawCall();
             state.recursiveDepth++;
@@ -498,7 +498,7 @@ var main = function(ex) {
         thisCall.h6 = h6; //So we can remove the element later on
 
         //Solve the layer conflict; draw the button after the header is created
-        if (state.recursiveDepth == 0) 
+        if (state.recursiveDepth == 0)
             quizButton = ex.createButton(canvasWidth*(8/9)-10, 10,
                                      "Start Quiz").on("click", startQuiz)
     }
@@ -737,7 +737,7 @@ var main = function(ex) {
             }
             ex.data.question3.complete = true;
             return; // so they can reflect on answer before moving on to next step
-        }        
+        }
         else if (state.questionNum == 4 && ex.data.question4.complete == false) {
             q4Dropdown.disable();
             if (ex.data.question4.answer == ex.data.question4.selected) {
@@ -797,8 +797,8 @@ var main = function(ex) {
     var quizList = generateList();
     ex.data.state.quizList = quizList;
     var q2Dropdown;
-    var q3Dropdown;     
-    var q4Dropdown;   
+    var q3Dropdown;
+    var q4Dropdown;
     var questionObjects = {};
 
     // Removes the visualization elements
@@ -1057,7 +1057,7 @@ var main = function(ex) {
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question3.question, {size: "large"});
+                            ex.data.question4.question, {size: "large"});
 
         questionObjects.question = question;
     }
