@@ -46,6 +46,21 @@ var main = function(ex) {
     ex.chromeElements.newButton.on("click", resetPressed);
     ex.chromeElements.resetButton.on("click", resetPressed);
     ex.chromeElements.submitButton.disable();
+
+    //keybinding removal is not working
+    function disableNext(){
+        nextButton.disable();
+        //The .off("keydown") and .off("keypress") seems to have bug
+        //bind to null instead
+        nextButton.style({keybinding: ["0", 0]})
+        console.log(nextButton.style())
+    }
+    function enableNext(){
+        nextButton.enable();
+        nextButton.style({keybinding: ["", 39]})
+    }
+
+
     var nextButton;
     var prevButton;
     var skipButton;
@@ -74,6 +89,7 @@ var main = function(ex) {
         state.isMerging = false;
         state.isAdding1 = false;
         state.isAdding2 = false;
+        state.reverseFn = [];
 
         //Remove every header in the teaching part
         for (var i = 0; i < state.listLength+1; i++) {
@@ -249,7 +265,8 @@ var main = function(ex) {
     function init(){
         //generate recursiveCall data
         nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
-                                        "Next").on("click", nextStep)
+                                        "Next", {keybinding: ["", 39]}).on("click", nextStep)
+
         prevButton = ex.createButton(canvasWidth*(9/11)-60, canvasHeight*(9/10),
                                          "Prev").on("click", prevStep)
         skipButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
@@ -295,6 +312,7 @@ var main = function(ex) {
 
     //perform appropriate action after nextButton is clicked
     function nextStep() {
+        console.log("next step")
 
         state.prevFns.push(function(){})
         if (state.recursiveDepth == state.listLength + 1) {
@@ -507,7 +525,7 @@ var main = function(ex) {
             thisCall.h6.remove();
         })
         ////
-        nextButton.disable()
+        disableNext()
         console.log("drawReturn depth: " + state.recursiveDepth)
         var thisCall = state.recursiveCalls[state.recursiveDepth];
 
@@ -530,7 +548,9 @@ var main = function(ex) {
         //display the return value
         var h6 = ex.createHeader(x0, y0, s1,
                     {size:fontSize, textAlign:"left", transition:"fade"});
-        animateMoveElement(h6, xOrigin, yOrigin, function() {nextButton.enable()})
+        animateMoveElement(h6, xOrigin, yOrigin, function() {
+            console.log("enabled***");
+             enableNext()})
 
         //Doesn't set the block width to the final resulting list
         if (state.recursiveDepth != 0) h6.width(blockWidth);
@@ -591,7 +611,7 @@ var main = function(ex) {
             thisCall.h4.show();
         })
         ////
-        nextButton.disable();
+        disableNext();
         //attempts to prevent timing issues when pressing next too fast
         console.log("drawAdd1 depth: " + state.recursiveDepth)
 
@@ -604,7 +624,7 @@ var main = function(ex) {
             var firstElement = thisCall.input[0];
             thisCall.h2.text(xToString(returningList));
             thisCall.h2.show();
-            nextButton.enable();
+            enableNext();
         }
         //remove this call's join headers h2 h4
         thisCall.h4.hide();
@@ -629,7 +649,7 @@ var main = function(ex) {
             thisCall.h5.show();
         })
         ////
-        nextButton.disable();
+        disableNext();
         console.log("drawAdd2 depth: " + state.recursiveDepth);
         function addE(e, l) {
             var l0 = [];
@@ -696,7 +716,7 @@ var main = function(ex) {
             var xMoveBack = xToString(addE(1,thisCall.input)).length*fontWidth-45;
             animateMoveElement(thisCall.h5, thisCall.h5.box().x - xMoveBack, initY, function(){
                 integrateH3();
-                nextButton.enable();
+                enableNext();
                 animationDuration = defaultAnimationDuration;
             });
             for (var i = 0; i < fliers.length; i++) {
