@@ -67,9 +67,9 @@ var main = function(ex) {
     //                                 {size:"small", textAlign:"left"})
 
 
-	/////// Animation Configuration
-	var animationDuration = 200;
-	var defaultAnimaitonDuration = 200;
+    /////// Animation Configuration
+    var animationDuration = 200;
+    var defaultAnimaitonDuration = 200;
 
     //return a list of integer of length listLength, values from 0 to 9
     function generateList() {
@@ -79,8 +79,8 @@ var main = function(ex) {
             n = Math.round(Math.random() * 10);
             //It's OK to have repeated element
             var e;
-        	if (isChar) e = String.fromCharCode(65+n);
-        	else e = Math.floor(Math.random() * 10);
+            if (isChar) e = String.fromCharCode(65+n);
+            else e = Math.floor(Math.random() * 10);
 
             arr.push(e);
         }
@@ -105,7 +105,7 @@ var main = function(ex) {
 
     //if x is of type number, string or list, xToString convert x to string
     function xToString(x) {
-    	if (typeof(x) == "object") {
+        if (typeof(x) == "object") {
             // x is a list
             var str = "[";
             for (var i = 0; i < x.length; i++) {
@@ -118,7 +118,7 @@ var main = function(ex) {
             return str;
         }
         else if (x == "_")
-        	return "___";
+            return "___";
         else if (typeof(x) == "number")
             return x.toString();
         else if (typeof(x) == "string")
@@ -331,7 +331,7 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
-    	nextButton.disable()
+        nextButton.disable()
         console.log("drawReturn depth: " + state.recursiveDepth)
         var thisCall = state.recursiveCalls[state.recursiveDepth];
 
@@ -471,8 +471,8 @@ var main = function(ex) {
     // }
 
     function drawAdd2(){
-    	nextButton.disable();
-    	console.log("drawAdd2 depth: " + state.recursiveDepth);
+        nextButton.disable();
+        console.log("drawAdd2 depth: " + state.recursiveDepth);
         function addE(e, l) {
             var l0 = [];
             for (i = 0; i < l.length; i++) {
@@ -482,10 +482,10 @@ var main = function(ex) {
         }
 
         function integrateH3(){
-        	for (var i = 0; i < fliers.length; i++)
-        		fliers[i].remove();
-        	thisCall.h5.remove();
-        	thisCall.h3.text(xToString(addE(firstElement, returningList)));
+            for (var i = 0; i < fliers.length; i++)
+                fliers[i].remove();
+            thisCall.h5.remove();
+            thisCall.h3.text(xToString(addE(firstElement, returningList)));
             thisCall.h3.show();
         }
 
@@ -494,12 +494,12 @@ var main = function(ex) {
         //formula in this function are empirical result
         //and are subject to changes
         function xd(l, index) {
-        	var k = 0;
-        	for (var j = 0; j < index; j++)
+            var k = 0;
+            for (var j = 0; j < index; j++)
 
-        		k += xToString(l[j]).length-2.8;
+                k += xToString(l[j]).length-2.8;
 
-        	return k+1+index;
+            return k+1+index;
         }
         var thisCall = state.recursiveCalls[state.recursiveDepth];
         var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
@@ -518,33 +518,33 @@ var main = function(ex) {
         animationDuration = 600;
 
         function fly() {
-        	console.log("fly")
-	        thisCall.h3.hide();
-	    	//the element of the list that flies into the empty space
+            console.log("fly")
+            thisCall.h3.hide();
+            //the element of the list that flies into the empty space
 
-	        for (var i = 0; i < returningList.length; i++) {
-	        	var flier = ex.createHeader(initX, initY, xToString(firstElement), {size: fontSize});
-	        	var destX = thisCall.h5.box().x;
-	        	destX = destX + xd(addE("_", returningList), i)*fontWidth;
-	        	animateMoveElement(flier, destX, initY, function(){});
-	        	fliers.push(flier);
-	        }
-	        setTimeout(moveBack, 2000)
+            for (var i = 0; i < returningList.length; i++) {
+                var flier = ex.createHeader(initX, initY, xToString(firstElement), {size: fontSize});
+                var destX = thisCall.h5.box().x;
+                destX = destX + xd(addE("_", returningList), i)*fontWidth;
+                animateMoveElement(flier, destX, initY, function(){});
+                fliers.push(flier);
+            }
+            setTimeout(moveBack, 2000)
         }
         setTimeout(fly, 1000);
 
         function moveBack() {
-	        //move h5 back to the place of h3; remove h5 and fliers, show H3.
-	        console.log("moving")
-	        var xMoveBack = xToString(addE(1,thisCall.input)).length*fontWidth-45;
-	        animateMoveElement(thisCall.h5, thisCall.h5.box().x - xMoveBack, initY, function(){
-	        	integrateH3();
-	        	nextButton.enable();
-	        	animationDuration = defaultAnimaitonDuration;
-	        });
-	        for (var i = 0; i < fliers.length; i++) {
-	        	animateMoveElement(fliers[i], fliers[i].box().x - xMoveBack, initY, function(){});
-	        }
+            //move h5 back to the place of h3; remove h5 and fliers, show H3.
+            console.log("moving")
+            var xMoveBack = xToString(addE(1,thisCall.input)).length*fontWidth-45;
+            animateMoveElement(thisCall.h5, thisCall.h5.box().x - xMoveBack, initY, function(){
+                integrateH3();
+                nextButton.enable();
+                animationDuration = defaultAnimaitonDuration;
+            });
+            for (var i = 0; i < fliers.length; i++) {
+                animateMoveElement(fliers[i], fliers[i].box().x - xMoveBack, initY, function(){});
+            }
         }
 
     }
@@ -561,30 +561,43 @@ var main = function(ex) {
         setTimeout(showMergeResult, 500);
     }
 
-    var firstQuiz = true;
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
-        if (state.questionNum == 1) {
-            q1Dropdown.disable();
-            if (ex.data.question1.answer == ex.data.question1.selected) {
+        if (state.questionNum == 1 && ex.data.question1.complete == false) {
+            if (q1Input.text() == "") {
+                ex.alert("Please type your answer in the input box.",
+                    {transition: "alert-long"});
+                return; // So they are forced to input an answer
+            }
+            q1Input.disable();
+            if (ex.data.question1.answer == q1Input.text().trim()) {
                 ex.data.question1.finalCorrect = true;
-                ex.showFeedback("Correct!");
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question1.finalCorrect = false;
-                ex.showFeedback("Incorrect");
+                ex.alert("Incorrect. The correct answer is " +
+                    ex.data.question1.answer,
+                    {color: "red", transition: "alert-long"});
             }
-            q1Dropdown.remove();
-            state.questionNum = 2;
+            ex.data.question1.complete = true;
+            return; // so they can reflect on answer before moving on to next step
+        }
+        else if (state.questionNum == 2 && ex.data.question2.complete == false) {
+            q2Dropdown.disable();
+            if (ex.data.question2.answer == ex.data.question2.selected) {
+                ex.data.question2.finalCorrect = true;
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            }
+            else {
+                ex.data.question2.finalCorrect = false;
+                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            }
+            ex.data.question2.complete = true;
+            return; // so they can reflect on answer before moving on to next step
         }
 
-        //Remove previous question
-        if (firstQuiz) firstQuiz = false;
-            else{
-                //Remove question
-                questionObjects.question.remove();
-            }
         console.log(state.recursiveDepth);
         if (state.recursiveDepth == state.listLength + 1) {
             //start to return
@@ -601,12 +614,6 @@ var main = function(ex) {
         if (!state.isReturning) {
             //recursive call
             drawCall();
-
-            //// Starts question 1
-            if (state.recursiveDepth == 0) {
-                ex.data.state.questionNum = 1;
-                drawQ1();
-            }
             state.recursiveDepth++;
         } else {
             //if next step is to merge
@@ -620,12 +627,18 @@ var main = function(ex) {
                 state.recursiveDepth--;
             }
         }
+
+        // Moves on to the next question
+        if (state.questionNum == 1 && ex.data.question1.complete == true)
+            drawQ2();
+        if (state.questionNum == 2 && ex.data.question2.complete == true)
+            drawQ3();
     }
 
     var nextQButton;
     var quizList = generateList();
     ex.data.state.quizList = quizList;
-    var q1Dropdown;
+    var q2Dropdown;
     var questionObjects = {};
 
     // Removes the visualization elements
@@ -650,6 +663,10 @@ var main = function(ex) {
         skipButton.remove();
         nextButton.remove();
         quizButton.remove();
+        codeWell1.remove();
+
+        codeWell1 = ex.createCode(10, canvasHeight-210,
+                          ex.data.questionCode.display, ex.data.questionCode);
 
         // resetting values
         state.recursiveCalls = [];
@@ -662,13 +679,37 @@ var main = function(ex) {
         powersetMain(quizList);
         nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
                                       "Next").on("click", nextQuestion);
-        nextQuestion();
+        drawQ1();
+    }
+
+    var q1Input;
+    // The function to display question 1 in quiz mode. Every drawQ# function
+    // will get rid of the elements that were used in the previous question,
+    // set the question number in the state, and then draw the question.
+    function drawQ1() {
+        console.log("Question 1");
+
+        state.questionNum = 1;
+        ex.data.question1.question = "How many total calls to powerset will " +
+                                 "there be as a result of calling powerset(" +
+                                 xToString(quizList) + ")?";
+        ex.data.question1.answer = quizList.length + 1;
+
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var question = ex.createParagraph(xQuestion, yQuestion,
+                            ex.data.question1.question, {size: "large"});
+
+        questionObjects.question = question;
+
+        q1Input = ex.createInputText(xQuestion,yQuestion + 60,"Answer (e.g.: 0)");
+
     }
 
     //Generates answers for question 1 of the quiz
-    function genQ1Answers(fullList, numSelections) {
+    function genQ2Answers(fullList, numSelections) {
         pset = powerset(fullList);
-        // The correct answer for Q1
+        // The correct answer for Q2
         correct = fullList.slice(1,fullList.length);
         var selections = []
         cIndex = Math.round(Math.random() * (numSelections-1));
@@ -683,44 +724,56 @@ var main = function(ex) {
             }
         }
         selections[cIndex] = correct;
-        ex.data.question1.answer = cIndex;
+        ex.data.question2.answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question1.options.push("powerset( [" + selections[i] + "] )");
+            ex.data.question2.options.push("powerset( [" + selections[i] + "] )");
         }
     }
 
-    function drawQ1() {
-        genQ1Answers(quizList, 4);
-        console.log(xToString(ex.data.question1.options));
+    function drawQ2() {
+        q1Input.remove();
+        questionObjects.question.remove();
+        state.questionNum = 2;
+
+        nextQButton.disable();
+        genQ2Answers(quizList, 4);
+        console.log(xToString(ex.data.question2.options));
         var elements = {};
-        for (var i = 0; i < ex.data.question1.options.length; i++) {
-            elements[ex.data.question1.options[i]] = q1Select(i);
+        for (var i = 0; i < ex.data.question2.options.length; i++) {
+            elements[ex.data.question2.options[i]] = q2Select(i);
         }
 
-        function q1Select(i) {
+        function q2Select(i) {
             return function() {
-                ex.data.question1.selected = i;
+                ex.data.question2.selected = i;
+                nextQButton.enable();
             }
         }
 
         //coordinates of topleft of blocks
-        var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 1);
+        var xOrigin = sideMargin + blockWidth * state.recursiveDepth;
         //times 1.5 because the height offirst line of a newblock is between
         //the height of second and third lines of the previous block
-        var yOrigin = topMargin + (state.recursiveDepth + 1) * 3 * lineHeight;
+        var yOrigin = topMargin + state.recursiveDepth * 3 * lineHeight;
 
         // Make a dropdown
-        q1Dropdown = ex.createDropdown(xOrigin,yOrigin,"Select One", {
+        q2Dropdown = ex.createDropdown(xOrigin,yOrigin,"Select One", {
             elements: elements
         });
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question1.question, {size: "large"});
+                            ex.data.question2.question, {size: "large"});
 
         questionObjects.question = question;
+    }
+
+    function drawQ3() {
+        q2Dropdown.remove();
+        questionObjects.question.remove();
+        state.questionNum = 3;
     }
 
 
