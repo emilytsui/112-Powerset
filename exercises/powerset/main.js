@@ -43,7 +43,8 @@ var main = function(ex) {
     ///////////////button configuration
     ex.chromeElements.undoButton.disable();
     ex.chromeElements.redoButton.disable();
-    ex.chromeElements.resetButton.disable();
+    ex.chromeElements.newButton.on("click", resetPressed);
+    ex.chromeElements.resetButton.on("click", resetPressed);
     ex.chromeElements.submitButton.disable();
     var nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
                                     "Next").on("click", nextStep)
@@ -68,8 +69,66 @@ var main = function(ex) {
 
 
 	/////// Animation Configuration
-	var animationDuration = 200;
-	var defaultAnimaitonDuration = 200;
+	var animationDuration = 300;
+	var defaultAnimaitonDuration = 300;
+
+    //this function reset parameters and remove headers
+    //this code is used in multiple function
+    function clearUp(){
+        quizButton.disable(); //Can't do quiz until step through visualization
+
+        /////// Animation Configuration
+        var animationDuration = 300;
+        var defaultAnimaitonDuration = 300;
+
+        state.recursiveDepth = 0;
+        state.isReturning = false;
+        state.isSubstituting = false;
+        state.isMerging = false;
+        state.isAdding1 = false;
+        state.isAdding2 = false;
+
+        //Remove every header
+        for (var i = 0; i < state.listLength+1; i++) {
+            var thisCall = state.recursiveCalls[i];
+            try{
+                thisCall.h1.remove();
+            }
+            catch(err){}
+            try{
+                thisCall.h2.remove();         
+            }
+            catch(err){}
+            try{
+                thisCall.h3.remove();  
+            }
+            catch(err){}
+            try{
+                thisCall.h4.remove();
+            }
+            catch(err){}
+            try{
+                thisCall.h5.remove();
+            }
+            catch(err){}
+            try{
+                thisCall.h6.remove();
+            }
+            catch(err){}
+        }
+    }
+    function newPressed(){
+        clearUp();
+        init();
+    }
+
+    function resetPressed(){
+        skipButton.enable();
+        nextButton.enable();
+        prevButton.enable();
+        clearUp();
+        nextStep();
+    }
 
     //return a list of integer of length listLength, values from 0 to 9
     function generateList() {
@@ -172,10 +231,12 @@ var main = function(ex) {
         recurseMove(0);
     }
 
-    //generate recursiveCall data
-    powersetMain(generateList())
-    nextStep(); //To show the initial call of function
-    console.log(state.recursiveCalls)
+    init();
+    function init(){
+        //generate recursiveCall data
+        powersetMain(generateList())
+        nextStep(); //To show the initial call of function
+    }
 
     //perform appropriate action after prevButton is clicked
     function prevStep() { //don't think this is implemented correctly
@@ -262,11 +323,30 @@ var main = function(ex) {
 
     //perform appropriate action after skipButton is clicked
     function skipStep() {
-        // This is a quick implementation of skip using next
-        // May consider revising this in the future.
-        while (state.recursiveDepth != -1){
-            nextStep();
+        clearUp();
+        for (var i = 0; i < state.listLength+1; i++){
+
+            var xOrigin = sideMargin + blockWidth * i;
+            var yOrigin = topMargin + i * 3 * lineHeight;
+            var thisCall = state.recursiveCalls[i];
+            var s1 = "powerset("+xToString(thisCall.input)+")"
+            var h1 = ex.createHeader(xOrigin, yOrigin, s1,
+                        {size:fontSize, textAlign:"right",
+                         transition:"fade"});
+            state.recursiveCalls[i].h1 = h1;
+
+            var s2 = xToString(thisCall.result);
+            var h2 = ex.createHeader(xOrigin, yOrigin + lineHeight, s2,
+                                {size:fontSize, textAlign:"right",
+                                 transition:"fade"});
+            state.recursiveCalls[i].h2 = h2;
+            h2.width(blockWidth);
+            h1.width(blockWidth);
         }
+
+        skipButton.disable();
+        nextButton.disable();
+        prevButton.disable();
         quizButton.enable();
         return;
     }
@@ -331,7 +411,7 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
-    	nextButton.disable()
+    	// nextButton.disable()
         console.log("drawReturn depth: " + state.recursiveDepth)
         var thisCall = state.recursiveCalls[state.recursiveDepth];
 
@@ -371,23 +451,26 @@ var main = function(ex) {
         var x0 = thisCall.h2.box().x+150
         var y0 = thisCall.h2.box().y
         //display the return value
-        var h1 = ex.createHeader(x0, y0, s1,
+        var h6 = ex.createHeader(x0, y0, s1,
                     {size:fontSize, textAlign:"left", transition:"fade"});
-        animateMoveElement(h1, xOrigin, yOrigin, function() {nextButton.enable()})
+        animateMoveElement(h6, xOrigin, yOrigin, function() {nextButton.enable()})
 
         //Doesn't set the block width to the final resulting list
-        if (state.recursiveDepth != 0) h1.width(blockWidth);
-        else h1.width(canvasWidth);
-        thisCall.h6 = thisCall.h1; //So we can remove the element later on
-        thisCall.h1 = h1;
+        if (state.recursiveDepth != 0) h6.width(blockWidth);
+        else h6.width(canvasWidth);
+        thisCall.h6 = h6; //So we can remove the element later on
 
+        //Solve the layer conflict; draw the button after the header is created
+        if (state.recursiveDepth == 0) 
+            quizButton = ex.createButton(canvasWidth*(8/9)-10, 10,
+                                     "Start Quiz").on("click", startQuiz)
     }
 
     //display the result after merge(or not) the first element with the returned value
     function drawSubstitute() {
 
         //remove header of the callee
-        state.recursiveCalls[state.recursiveDepth+1].h1.hide();
+        state.recursiveCalls[state.recursiveDepth+1].h6.hide();
 
         var listText = state.recursiveCalls[state.recursiveDepth+1].h1.text();
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 1) + 10;
@@ -430,6 +513,7 @@ var main = function(ex) {
         function reviseH2() {
             console.log("revising in drawAdd1");
             //Revise this calls' join headers h2
+            console.log(state.recursiveCalls[state.recursiveDepth+1])
             var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
             var firstElement = thisCall.input[0];
             thisCall.h2.text(xToString(returningList));
@@ -443,32 +527,6 @@ var main = function(ex) {
 
     }
 
-    // function drawAdd2(){
-    //     nextButton.disable();
-    //     var thisCall = state.recursiveCalls[state.recursiveDepth];
-    //     console.log("drawAdd2 depth: " + state.recursiveDepth);
-    //     function addE(e, l) {
-    //         var l0 = [];
-    //         for (i = 0; i < l.length; i++) {
-    //             l0.push([e].concat(l[i]))
-    //         }
-    //         return l0;
-    //     }
-
-    //     function reviseH3() {
-    //         console.log("revising in drawAdd2");
-    //         //Revise this calls' join headers h3
-    //         var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
-    //         var firstElement = thisCall.input[0];
-    //         thisCall.h3.text(xToString(addE(firstElement, returningList)));
-    //         thisCall.h3.show();
-    //         nextButton.enable();
-    //     }
-    //     //remove this call's join headers h3 h5
-    //     thisCall.h5.hide();
-    //     thisCall.h3.hide();
-    //     setTimeout(reviseH3(), 500);
-    // }
 
     function drawAdd2(){
     	nextButton.disable();
@@ -490,16 +548,16 @@ var main = function(ex) {
         }
 
         //calculate number of characters before ith element in l
-        //assume elements all have length 1
         //formula in this function are empirical result
         //and are subject to changes
+        //I've tried hundreds of times, this is the best I can get.
         function xd(l, index) {
         	var k = 0;
         	for (var j = 0; j < index; j++)
 
-        		k += xToString(l[j]).length-2.8;
-
-        	return k+1+index;
+        		k += xToString(l[j]).length-4.1;
+            if (index == 0) k--;
+        	return k+2.2+index*2;
         }
         var thisCall = state.recursiveCalls[state.recursiveDepth];
         var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
@@ -515,7 +573,7 @@ var main = function(ex) {
         thisCall.h5.show();
 
         //make animatio slower for this part
-        animationDuration = 600;
+        animationDuration = 300;
 
         function fly() {
         	console.log("fly")
