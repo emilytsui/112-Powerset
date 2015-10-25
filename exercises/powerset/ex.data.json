@@ -29,11 +29,13 @@
         "isMerging": false,
         "isAdding1": false,
         "isAdding2": false,
+        "isQuizzing": false,
         "questionNum": 0,
         "rectLeft": 0,
         "rectTop": 0,
         "rectWidth": 0,
-        "rectHeight": 0
+        "rectHeight": 0,
+        "visualList": []
     },
     "questionCode": {
         "lang": "python",
@@ -65,6 +67,46 @@
     },
     "question4": {
         "question": "What will the next recursive call be?",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
+    },
+    "question5": {
+        "question": "",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
+    },
+    "question6": {
+        "question": "",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
+    },
+    "question7": {
+        "question": "",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
+    },
+    "question8": {
+        "question": "",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
+    },
+    "question9": {
+        "question": "",
         "options": [],
         "answer": -1,
         "selected": -1,
