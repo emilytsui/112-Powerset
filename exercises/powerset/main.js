@@ -402,8 +402,9 @@ var main = function(ex) {
         //Base Case
         if (state.recursiveDepth == state.listLength) {
             ////
+            var depth = state.recursiveDepth;
             reverseFn(function(){
-                var thisCall = state.recursiveCalls[state.recursiveDepth];
+                var thisCall = state.recursiveCalls[depth];
                 thisCall.h1.remove();
                 thisCall.h2.remove();
             })
@@ -424,7 +425,8 @@ var main = function(ex) {
         }
         ////
         reverseFn(function(){
-            var thisCall = state.recursiveCalls[state.recursiveDepth];
+            var depth = state.recursiveDepth;
+            var thisCall = state.recursiveCalls[depth];
             thisCall.h1.remove();
             thisCall.h2.remove();
             thisCall.h3.remove();
@@ -459,9 +461,9 @@ var main = function(ex) {
     //remove headers that representing function call
     //display the return value
     function drawReturn() {
+
         ////
         reverseFn(function(){
-            var thisCall = state.recursiveCalls[state.recursiveDepth];
             thisCall.h6.remove();
         })
         ////
@@ -505,18 +507,18 @@ var main = function(ex) {
     function drawSubstitute() {
         ////
         reverseFn(function(){
-            var thisCall = state.recursiveCalls[state.recursiveDepth];
+            
             thisCall.h4.remove();
             thisCall.h5.remove();
 
-            state.recursiveCalls[state.recursiveDepth+1].h6.show();
+            state.recursiveCalls[depth+1].h6.show();
         })
         ////
 
         //remove header of the callee
         state.recursiveCalls[state.recursiveDepth+1].h6.hide();
 
-        var listText = state.recursiveCalls[state.recursiveDepth+1].h1.text();
+        var listText = state.recursiveCalls[state.recursiveDepth+1].h6.text();
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 1) + 10;
         var depth = state.recursiveDepth;
         // I think I have solved the height problem for merge.
@@ -541,10 +543,11 @@ var main = function(ex) {
     }
 
     function drawAdd1(){
+        var thisCall = state.recursiveCalls[state.recursiveDepth];
         ////
+        var h2Text = thisCall.h2.text();
         reverseFn(function(){
-            var thisCall = state.recursiveCalls[state.recursiveDepth];
-            thisCall.h2.text(thisCall.h2.text());
+            thisCall.h2.text(h2Text);
             thisCall.h4.show();
         })
         ////
@@ -572,12 +575,18 @@ var main = function(ex) {
 
 
     function drawAdd2(){
+        var thisCall = state.recursiveCalls[state.recursiveDepth];
+
         ////
+        var h5Text = thisCall.h5.text();
+        var h3Text = thisCall.h3.text();
+        var h5x = thisCall.h5.box().x;
+        var h5y = thisCall.h5.box().y;
         reverseFn(function(){
-            var thisCall = state.recursiveCalls[state.recursiveDepth];
-            thisCall.h5.position(thisCall.h5.box.x, thisCall.h5.box.y);
-            thisCall.h5.text(thisCall.h5.text());
-            thisCall.h3.text(thisCall.h3.text());
+            thisCall.h5.position(h5x, h5y);
+            thisCall.h5.text(h5Text);
+            thisCall.h3.text(h3Text);
+            thisCall.h5.show();
         })
         ////
         nextButton.disable();
@@ -593,7 +602,7 @@ var main = function(ex) {
         function integrateH3(){
             for (var i = 0; i < fliers.length; i++)
                 fliers[i].remove();
-            thisCall.h5.remove();
+            thisCall.h5.hide();
             thisCall.h3.text(xToString(addE(firstElement, returningList)));
             thisCall.h3.show();
         }
@@ -610,7 +619,6 @@ var main = function(ex) {
             if (index == 0) k--;
             return k+2.2+index*2;
         }
-        var thisCall = state.recursiveCalls[state.recursiveDepth];
         var returningList = state.recursiveCalls[state.recursiveDepth+1].result;
         var firstElement = thisCall.input[0];
         //fontwidth is subject to changes
@@ -659,16 +667,18 @@ var main = function(ex) {
     }
 
     function drawMerge(){
+        var thisCall = state.recursiveCalls[state.recursiveDepth];
+
         ////
+        var h2Text = thisCall.h2.text();
         reverseFn(function(){
-            var thisCall = state.recursiveCalls[state.recursiveDepth];
-            thisCall.h2.text(thisCall.h2.text());
+            thisCall.h2.text(h2Text);
             thisCall.h2.show();
             thisCall.h3.show();
         })
         ////
         console.log("merging");
-        var thisCall = state.recursiveCalls[state.recursiveDepth];
+        
         function showMergeResult() {
             var resultList = thisCall.result;
             thisCall.h2.text(xToString(resultList));
