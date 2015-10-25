@@ -1,6 +1,6 @@
 /**
- * @file Select the Language
- * @author m
+ * @file Powerset
+ * @author Group 5 - Max, Emily, Andy
  */
 var main = function(ex) {
     //always quiz-immediate
@@ -79,7 +79,7 @@ var main = function(ex) {
             n = Math.round(Math.random() * 10);
             //It's OK to have repeated element
             var e;
-        	if (isChar) e = String.fromCharCode(65+n); 
+        	if (isChar) e = String.fromCharCode(65+n);
         	else e = Math.floor(Math.random() * 10);
 
             arr.push(e);
@@ -529,7 +529,7 @@ var main = function(ex) {
 	        	animateMoveElement(flier, destX, initY, function(){});
 	        	fliers.push(flier);
 	        }
-	        setTimeout(moveBack, 2500)
+	        setTimeout(moveBack, 2000)
         }
         setTimeout(fly, 1000);
 
@@ -565,6 +565,19 @@ var main = function(ex) {
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
+        if (state.questionNum == 1) {
+            q1Dropdown.disable();
+            if (ex.data.question1.answer == ex.data.question1.selected) {
+                ex.data.question1.finalCorrect = true;
+                ex.showFeedback("Correct!");
+            }
+            else {
+                ex.data.question1.finalCorrect = false;
+                ex.showFeedback("Incorrect");
+            }
+            q1Dropdown.remove();
+            state.questionNum = 2;
+        }
 
         //Remove previous question
         if (firstQuiz) firstQuiz = false;
@@ -592,8 +605,6 @@ var main = function(ex) {
             //// Starts question 1
             if (state.recursiveDepth == 0) {
                 ex.data.state.questionNum = 1;
-                nextQButton.disable();
-                submitQButton.disable();
                 drawQ1();
             }
             state.recursiveDepth++;
@@ -612,32 +623,10 @@ var main = function(ex) {
     }
 
     var nextQButton;
-    var submitQButton;
     var quizList = generateList();
     ex.data.state.quizList = quizList;
     var q1Dropdown;
     var questionObjects = {};
-
-    // Checks if the submitted answer to a question in quiz mode is correct
-    function submitQuestion() {
-        submitQButton.disable();
-        q1Dropdown.disable();
-        nextQuestion();
-        if (state.questionNum == 1) {
-            console.log(ex.data.question1.answer, ex.data.question1.selected);
-            if (ex.data.question1.answer == ex.data.question1.selected) {
-                ex.data.question1.finalCorrect = true;
-                ex.showFeedback("Correct!");
-            }
-            else {
-                ex.data.question1.finalCorrect = false;
-                ex.showFeedback("Incorrect");
-            }
-            state.recursiveCalls[state.recursiveDepth-1].h1.hide();
-        }
-        nextQButton.enable();
-    }
-
 
     // Removes the visualization elements
     // Adds the necessary quiz elements
@@ -673,9 +662,6 @@ var main = function(ex) {
         powersetMain(quizList);
         nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
                                       "Next").on("click", nextQuestion);
-        submitQButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
-                                        "Submit").on("click", submitQuestion);
-        submitQButton.disable();
         nextQuestion();
     }
 
@@ -715,7 +701,6 @@ var main = function(ex) {
         function q1Select(i) {
             return function() {
                 ex.data.question1.selected = i;
-                submitQButton.enable();
             }
         }
 
