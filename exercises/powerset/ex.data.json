@@ -70,5 +70,13 @@
         "selected": -1,
         "complete": false,
         "finalCorrect": false
+    },
+    "question5": {
+        "question": "What is the result of this recursive call?",
+        "options": [],
+        "answer": -1,
+        "selected": -1,
+        "complete": false,
+        "finalCorrect": false
     }
 }

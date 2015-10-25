@@ -741,6 +741,19 @@ var main = function(ex) {
             ex.data.question4.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
+        else if (state.questionNum == 5 && ex.data.question5.complete == false) {
+            q5Dropdown.disable();
+            if (ex.data.question5.answer == ex.data.question5.selected) {
+                ex.data.question5.finalCorrect = true;
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            }
+            else {
+                ex.data.question5.finalCorrect = false;
+                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            }
+            ex.data.question5.complete = true;
+            return; // so they can reflect on answer before moving on to next step
+        }
 
         console.log(state.recursiveDepth);
         if (state.recursiveDepth == state.listLength + 1) {
@@ -788,7 +801,8 @@ var main = function(ex) {
     ex.data.state.quizList = quizList;
     var q2Dropdown;
     var q3Dropdown;     
-    var q4Dropdown;   
+    var q4Dropdown; 
+    var q5Dropdown;    
     var questionObjects = {};
 
     // Removes the visualization elements
@@ -1052,12 +1066,69 @@ var main = function(ex) {
         questionObjects.question = question;
     }
 
-       // Draw Question 5 of Quiz mode
+    //Generates answers for question 3 of the quiz
+    function genQ5Answers(fullList, numSelections) {
+        pset = powerset(fullList);
+        // The correct answer for Q5
+
+        correct = ["[]"];//Dirty Fix!!!
+        
+        var selections = []
+        cIndex = Math.round(Math.random() * (numSelections-1));
+
+        // keep pushing to selections until we get enough options to fill it
+        while(selections.length != numSelections) {
+            n = Math.round(Math.random() * (pset.length-1));
+            if ( pset[n].length < fullList.length &&
+                 xToString(pset[n]) != xToString(correct) &&
+                 selections.indexOf(pset[n]) == -1) {
+                selections.push(pset[n]);
+            }
+        }
+        selections[cIndex] = correct;
+        ex.data.question5.answer = cIndex;
+
+        for (var i = 0; i < selections.length; i++) {
+            ex.data.question5.options.push("[" + selections[i] + "]");
+        }
+    }
+
+    // Draw Question 5 of Quiz mode
     function drawQ5 () {
         q4Dropdown.remove();
         questionObjects.question.remove();
         state.questionNum = 5;
         nextQButton.disable();
+        genQ5Answers(quizList, 4);
+        console.log(xToString(ex.data.question5.options));
+        var elements = {};
+        for (var i = 0; i < ex.data.question5.options.length; i++) {
+            elements[ex.data.question5.options[i]] = q5Select(i);
+        }
 
+        function q5Select(i) {
+            return function() {
+                ex.data.question5.selected = i;
+                nextQButton.enable();
+            }
+        }
+
+        //coordinates of topleft of blocks
+        var xOrigin = sideMargin + blockWidth * state.recursiveDepth-0.5 * blockWidth;
+        //times 1.5 because the height offirst line of a newblock is between
+        //the height of second and third lines of the previous block
+        var yOrigin = topMargin + state.recursiveDepth * 3 * lineHeight- 2 * lineHeight;
+
+        // Make a dropdown
+        q5Dropdown = ex.createDropdown(xOrigin ,yOrigin,"Choose the answer", {
+            elements: elements
+        });//The current coordinate heree is hardcoded. May be bugggy.
+
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var question = ex.createParagraph(xQuestion, yQuestion,
+                            ex.data.question5.question, {size: "large"});
+
+        questionObjects.question = question;
     }
 };
