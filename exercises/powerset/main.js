@@ -164,12 +164,16 @@ var main = function(ex) {
         var arr = [];
         var isChar = Math.random()<.5;
         for (i = 0; i < state.listLength; i++) {
-            n = Math.round(Math.random() * 10);
-            //It's OK to have repeated element
+            n = Math.floor(Math.random() * 10);
             var e;
             if (isChar) e = String.fromCharCode(65+n);
             else e = Math.floor(Math.random() * 10);
-
+            while(arr.indexOf(e) != -1) {
+            //Makes sure no item is repeated in array
+                n = Math.floor(Math.random() * 10);
+                if (isChar) e = String.fromCharCode(65+n);
+                else e = n;
+            }
             arr.push(e);
         }
         return(arr);
@@ -1522,4 +1526,8 @@ var main = function(ex) {
         questionObjects.question = question;
 
     }
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> origin/master
