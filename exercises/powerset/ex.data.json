@@ -90,7 +90,7 @@
         "finalCorrect": false
     },
     "question7": {
-        "question": "What is the line of the code primarily associated with the boxed action?",
+        "question": "What is the line of the code primarily associated with the action pointed by the arrow?",
         "options": [],
         "answer": -1,
         "selected": -1,
@@ -99,7 +99,7 @@
         "started": false
     },
     "question8": {
-        "question": "What is the result list from performing the boxed action?",
+        "question": "What is the result list from performing the action pointed by the arrow?",
         "options": [],
         "answer": -1,
         "selected": -1,

@@ -757,6 +757,7 @@ var main = function(ex) {
         setTimeout(showMergeResult, 500);
     }
 
+    var img;
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
@@ -907,6 +908,13 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
+            for (var key in questionObjects) {
+                questionObjects[key].remove();
+            }
+            nextQButton.disable();
+            state.recursiveDepth++; 
+            drawReturn();
+            state.recursiveDepth--;
             return; // so they can reflect on answer before moving on to next step
         }
 
@@ -920,7 +928,6 @@ var main = function(ex) {
 
         if (state.recursiveDepth == -1) {
             //finish
-            quizButton.enable();
             return;
         }
 
@@ -935,9 +942,13 @@ var main = function(ex) {
                 state.isSubstituting = false;
             } else {
             //Normal return
-                drawReturn();
+                if (state.questionNum <=8 && ex.data.question8.complete == false)
+                {
+                    drawReturn();
+                }
                 if (state.recursiveDepth != 0) state.isSubstituting = true;
                 state.recursiveDepth--;
+                
             }
         }
 
@@ -972,6 +983,7 @@ var main = function(ex) {
         else if (state.questionNum == 7 && ex.data.question7.complete == true) {
             if (ex.data.question8.started == false){
                 ex.data.question8.started = true;
+                img.remove();
                 setTimeout(nextQuestion, 500);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
@@ -980,6 +992,7 @@ var main = function(ex) {
             }
         }
         else if (state.questionNum == 8 && ex.data.question8.complete == true) {
+            img.remove();
             drawQ9();
         }
     }
@@ -1414,6 +1427,13 @@ var main = function(ex) {
                             ex.data.question7.question, {size: "large"});
         questionObjects.question = question;
 
+        var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
+        var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
+        img = ex.createImage(xOrigin,yOrigin,"arrow.png",{
+        width: "50px",
+        height:"50px"
+        });
+
     }
 
    //Generates answers for question 8 of the quiz
@@ -1485,8 +1505,14 @@ var main = function(ex) {
 
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question8.question, {size: "large"});
-        questionObjects.question = question;
 
+        questionObjects.question = question;
+        var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
+        var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
+        img = ex.createImage(xOrigin,yOrigin,"arrow.png",{
+        width: "50px",
+        height:"50px"
+        });
     }
 
    //Generates answers for question 9 of the quiz
@@ -1521,7 +1547,7 @@ var main = function(ex) {
         for (var key in questionObjects) {
             questionObjects[key].remove();
         }
-        state.questionNum = 8;
+        state.questionNum = 9;
         nextQButton.disable();
 
         genQ9Answers(quizList, 4);
@@ -1541,7 +1567,7 @@ var main = function(ex) {
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 2.2);
         //times 1.5 because the height offirst line of a newblock is between
         //the height of second and third lines of the previous block
-        var yOrigin = topMargin + (state.recursiveDepth + 1) * 3 * lineHeight;
+        var yOrigin = topMargin + (state.recursiveDepth + 0.9) * 3 * lineHeight;
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var q9Dropdown = ex.createDropdown(xOrigin, yOrigin, "Select the resulting list from initial call", {
