@@ -3,8 +3,14 @@
  * @author Group 5 - Max, Emily, Andy
  */
 var main = function(ex) {
-    //always quiz-immediate
-    console.log(ex.data.meta.mode);
+
+    ex.data.meta.mode = "practice";
+    // ex.data.meta.mode = "quiz-immediate";
+    // ex.data.meta.mode = "quiz-delay";
+
+    var mode = ex.data.meta.mode;
+
+    console.log(mode);
 
     /**
      * @returns {object} See Piazza post
@@ -60,14 +66,12 @@ var main = function(ex) {
         nextButton.style({keybinding: ["", 39]})
     }
 
-
     var nextButton;
     var prevButton;
     var skipButton;
     var quizButton;
     var codeWell1;
     var sep;
-
 
     /////// Animation Configuration
     var animationDuration = 300;
@@ -763,69 +767,79 @@ var main = function(ex) {
                 return; // So they are forced to input an answer
             }
             questionObjects.input.disable();
+            ex.data.question1.complete = true;
             if (ex.data.question1.answer == questionObjects.input.text().trim()) {
                 ex.data.question1.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question1.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect. The correct answer is " +
                     ex.data.question1.answer,
                     {color: "red", transition: "alert-long"});
             }
-            ex.data.question1.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 2 && ex.data.question2.complete == false) {
             questionObjects.dropdown.disable();
+            ex.data.question2.complete = true;
             if (ex.data.question2.answer == ex.data.question2.selected) {
                 ex.data.question2.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question2.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            ex.data.question2.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 3 && ex.data.question3.complete == false) {
             questionObjects.dropdown.disable();
+            ex.data.question3.complete = true;
             if (ex.data.question3.answer == ex.data.question3.selected) {
                 ex.data.question3.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question3.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            ex.data.question3.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 4 && ex.data.question4.complete == false) {
             questionObjects.dropdown.disable();
+            ex.data.question4.complete = true;
             if (ex.data.question4.answer == ex.data.question4.selected) {
                 ex.data.question4.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question4.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            ex.data.question4.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 5 && ex.data.question5.complete == false) {
             questionObjects.dropdown.disable();
+            ex.data.question5.complete = true;
             if (ex.data.question5.answer == ex.data.question5.selected) {
                 ex.data.question5.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question5.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            ex.data.question5.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 6 && ex.data.question6.complete == false) {
@@ -835,56 +849,64 @@ var main = function(ex) {
                 return; // So they are forced to input an answer
             }
             questionObjects.input.disable();
+            ex.data.question6.complete = true;
             if (ex.data.question6.answer == questionObjects.input.text().trim()) {
                 ex.data.question6.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question6.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect. The correct answer is " +
                     ex.data.question6.answer,
                     {color: "red", transition: "alert-long"});
             }
-            ex.data.question6.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 7 && ex.data.question7.complete == false) {
             questionObjects.dropdown.disable();
+            ex.data.question7.complete = true;
             if (ex.data.question7.answer == ex.data.question7.selected) {
                 ex.data.question7.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question7.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            ex.data.question7.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 8 && ex.data.question8.complete == false) {
             questionObjects.dropdown.disable();
+            ex.data.question8.complete = true;
             if (ex.data.question8.answer == ex.data.question8.selected) {
                 ex.data.question8.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question8.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            ex.data.question8.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 9 && ex.data.question9.complete == false) {
             questionObjects.dropdown.disable();
+            ex.data.question9.complete = true;
             if (ex.data.question9.answer == ex.data.question9.selected) {
                 ex.data.question9.finalCorrect = true;
+                if (mode == "quiz-delay") return;
                 ex.alert("Correct!", {color: "green", transition: "alert-long"});
             }
             else {
                 ex.data.question9.finalCorrect = false;
+                if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            ex.data.question9.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
 
@@ -971,6 +993,12 @@ var main = function(ex) {
     // Removes the visualization elements
     // Adds the necessary quiz elements
     function startQuiz() {
+        console.log(mode);
+        if (mode == "quiz-immediate") {
+            ex.chromeElements.resetButton.disable();
+            ex.chromeElements.newButton.disable();
+        }
+
         state.isQuizzing = true;
         quizList = generateList();
         ex.data.state.quizList = quizList;
@@ -1337,7 +1365,7 @@ var main = function(ex) {
     //Generates answers for question 7 of the quiz
     function genQ7Answers(fullList, numSelections) {
         // The correct answer for Q7
-        var answers = ["return [[]]", "allSubsets += [subset]", 
+        var answers = ["return [[]]", "allSubsets += [subset]",
         "allSubsets += [[a[0]] + subset]", "return allSubsets"];
 
         var selections = []
@@ -1526,8 +1554,4 @@ var main = function(ex) {
         questionObjects.question = question;
 
     }
-<<<<<<< HEAD
-}
-=======
 };
->>>>>>> origin/master
