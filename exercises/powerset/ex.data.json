@@ -90,27 +90,30 @@
         "finalCorrect": false
     },
     "question7": {
-        "question": "",
+        "question": "What is the line of the code primarily associated with the boxed action?",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
-        "finalCorrect": false
+        "finalCorrect": false,
+        "started": false
     },
     "question8": {
-        "question": "",
+        "question": "What is the result list from performing the boxed action?",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
-        "finalCorrect": false
+        "finalCorrect": false,
+        "started": false
     },
     "question9": {
-        "question": "",
+        "question": "What is the resulting list from initial call?",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
-        "finalCorrect": false
+        "finalCorrect": false,
+        "started": false
     }
 }

@@ -844,6 +844,46 @@ var main = function(ex) {
             ex.data.question6.complete = true;
             return; // so they can reflect on answer before moving on to next step
         }
+        else if (state.questionNum == 7 && ex.data.question7.complete == false) {
+            questionObjects.dropdown.disable();
+            if (ex.data.question7.answer == ex.data.question7.selected) {
+                ex.data.question7.finalCorrect = true;
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            }
+            else {
+                ex.data.question7.finalCorrect = false;
+                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            }
+            ex.data.question7.complete = true;
+            return; // so they can reflect on answer before moving on to next step
+        }
+        else if (state.questionNum == 8 && ex.data.question8.complete == false) {
+            questionObjects.dropdown.disable();
+            if (ex.data.question8.answer == ex.data.question8.selected) {
+                ex.data.question8.finalCorrect = true;
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            }
+            else {
+                ex.data.question8.finalCorrect = false;
+                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            }
+            ex.data.question8.complete = true;
+            return; // so they can reflect on answer before moving on to next step
+        }
+        else if (state.questionNum == 9 && ex.data.question9.complete == false) {
+            questionObjects.dropdown.disable();
+            if (ex.data.question9.answer == ex.data.question9.selected) {
+                ex.data.question9.finalCorrect = true;
+                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            }
+            else {
+                ex.data.question9.finalCorrect = false;
+                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            }
+            ex.data.question9.complete = true;
+            return; // so they can reflect on answer before moving on to next step
+        }
+
 
         console.log(state.recursiveDepth);
         if (state.recursiveDepth == state.listLength + 1) {
@@ -890,11 +930,31 @@ var main = function(ex) {
             drawQ5();
         }
         else if (state.questionNum == 5 && ex.data.question5.complete == true) {
-            q5Header.show();
+            //q5Header.show();
             drawQ6();
         }
         else if (state.questionNum == 6 && ex.data.question6.complete == true) {
-            drawQ7();
+            if (ex.data.question7.started == false){
+                ex.data.question7.started = true;
+                setTimeout(nextQuestion, 500);
+                // Fake next click for just once, set the timer to ensure
+                // that the previous timer event finishes
+            }else{
+                drawQ7();
+            }
+        }
+        else if (state.questionNum == 7 && ex.data.question7.complete == true) {
+            if (ex.data.question8.started == false){
+                ex.data.question8.started = true;
+                setTimeout(nextQuestion, 500);
+                // Fake next click for just once, set the timer to ensure
+                // that the previous timer event finishes
+            }else{
+                drawQ8();
+            }
+        }
+        else if (state.questionNum == 8 && ex.data.question8.complete == true) {
+            drawQ9();
         }
     }
 
@@ -1270,13 +1330,196 @@ var main = function(ex) {
         questionObjects.input = q6Input;
     }
 
+    //Generates answers for question 7 of the quiz
+    function genQ7Answers(fullList, numSelections) {
+        // The correct answer for Q7
+        var answers = ["return [[]]", "allSubsets += [subset]", 
+        "allSubsets += [[a[0]] + subset]", "return allSubsets"];
+
+        var selections = []
+
+        selections = answers;
+        cIndex = 2;
+
+        ex.data.question7.answer = cIndex;
+
+        for (var i = 0; i < selections.length; i++) {
+            ex.data.question7.options.push(selections[i]);
+        }
+    }
+
     // Draws Question 7 of the quiz
-    function drawQ7() {
+    function drawQ7 () {
         for (var key in questionObjects) {
             questionObjects[key].remove();
         }
         state.questionNum = 7;
         nextQButton.disable();
 
+        genQ7Answers(quizList, 4);
+        console.log(ex.data.question7.options);
+        var elements = {};
+        for (var i = 0; i < ex.data.question7.options.length; i++) {
+            elements[ex.data.question7.options[i]] = q7Select(i);
+        }
+
+        function q7Select(i) {
+            return function() {
+                ex.data.question7.selected = i;
+                nextQButton.enable();
+            }
+        }
+
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var q7Dropdown = ex.createDropdown(xQuestion, yQuestion+ 2 * lineHeight, "Select the answer", {
+            elements: elements
+        });
+        questionObjects.dropdown = q7Dropdown;
+
+
+        var question = ex.createParagraph(xQuestion, yQuestion,
+                            ex.data.question7.question, {size: "large"});
+        questionObjects.question = question;
+
     }
-};
+
+   //Generates answers for question 8 of the quiz
+    function genQ8Answers(fullList, numSelections) {
+        pset = powerset(fullList);
+        // The correct answer for Q8
+        var correct = [];
+        for (var i = 0 ;i < pset.length; i++){
+            if (i % 2 != 0){
+                if (i!=pset.length - 1){
+                    correct += xToString([pset[i]]) + ", ";
+                }else{
+                    correct += xToString([pset[i]]);
+                }
+            }
+        }
+        // The answer is implemented in a way such that
+        // lists longer than 3 can also be used for quiz.
+        var selections = []
+        cIndex = Math.round(Math.random() * (numSelections-1));
+
+        // keep pushing to selections until we get enough options to fill it
+        while(selections.length != numSelections) {
+            n = Math.round(Math.random() * (pset.length-1));
+            if ( pset[n].length < fullList.length &&
+                 xToString(pset[n]) != xToString(correct) &&
+                 selections.indexOf(pset[n]) == -1) {
+                selections.push(xToString(pset[n]));
+            }
+        }
+        selections[cIndex] = correct;
+        ex.data.question8.answer = cIndex;
+
+        for (var i = 0; i < selections.length; i++) {
+            ex.data.question8.options.push(selections[i]);
+        }
+
+    }
+
+    // Draws Question 8 of the quiz
+    function drawQ8 () {
+        for (var key in questionObjects) {
+            questionObjects[key].remove();
+        }
+        state.questionNum = 8;
+        nextQButton.disable();
+
+        genQ8Answers(quizList, 4);
+        console.log(ex.data.question8.options);
+        var elements = {};
+        for (var i = 0; i < ex.data.question8.options.length; i++) {
+            elements[ex.data.question8.options[i]] = q8Select(i);
+        }
+
+        function q8Select(i) {
+            return function() {
+                ex.data.question8.selected = i;
+                nextQButton.enable();
+            }
+        }
+
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var q8Dropdown = ex.createDropdown(xQuestion, yQuestion+ 2 * lineHeight, "Select the answer", {
+            elements: elements
+        });
+        questionObjects.dropdown = q8Dropdown;
+
+
+        var question = ex.createParagraph(xQuestion, yQuestion,
+                            ex.data.question8.question, {size: "large"});
+        questionObjects.question = question;
+
+    }
+
+   //Generates answers for question 9 of the quiz
+    function genQ9Answers(fullList, numSelections) {
+        pset = powerset(fullList);
+        // The correct answer for Q9
+        var correct = xToString(pset);
+        // The answer is implemented in a way such that
+        // lists longer than 3 can also be used for quiz.
+        var selections = []
+        cIndex = Math.round(Math.random() * (numSelections-1));
+        // keep pushing to selections until we get enough options to fill it
+        while(selections.length != numSelections) {
+            n = Math.round(Math.random() * (pset.length-1));
+            if ( pset[n].length < fullList.length &&
+                 xToString(pset[n]) != xToString(correct) &&
+                 selections.indexOf(pset[n]) == -1) {
+                selections.push(xToString(pset[n]));
+            }
+        }
+        selections[cIndex] = correct;
+        ex.data.question9.answer = cIndex;
+
+        for (var i = 0; i < selections.length; i++) {
+            ex.data.question9.options.push(selections[i]);
+        }
+
+    }
+
+    // Draws Question 9 of the quiz
+    function drawQ9 () {
+        for (var key in questionObjects) {
+            questionObjects[key].remove();
+        }
+        state.questionNum = 8;
+        nextQButton.disable();
+
+        genQ9Answers(quizList, 4);
+        console.log(ex.data.question9.options);
+        var elements = {};
+        for (var i = 0; i < ex.data.question9.options.length; i++) {
+            elements[ex.data.question9.options[i]] = q9Select(i);
+        }
+
+        function q9Select(i) {
+            return function() {
+                ex.data.question9.selected = i;
+                nextQButton.enable();
+            }
+        }
+
+        var xOrigin = sideMargin + blockWidth * (state.recursiveDepth + 2.2);
+        //times 1.5 because the height offirst line of a newblock is between
+        //the height of second and third lines of the previous block
+        var yOrigin = topMargin + (state.recursiveDepth + 1) * 3 * lineHeight;
+        var xQuestion = canvasWidth/2;
+        var yQuestion = canvasHeight*(5/8)+lineHeight;
+        var q9Dropdown = ex.createDropdown(xOrigin, yOrigin, "Select the resulting list from initial call", {
+            elements: elements
+        });
+        questionObjects.dropdown = q9Dropdown;
+
+        var question = ex.createParagraph(xQuestion, yQuestion,
+                            ex.data.question9.question, {size: "large"});
+        questionObjects.question = question;
+
+    }
+}
