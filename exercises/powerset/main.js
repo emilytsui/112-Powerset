@@ -1120,8 +1120,8 @@ var main = function(ex) {
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
-                drawQ7();
                 nextQButton.enable();
+                drawQ7();
             }
         }
         else if (state.questionNum == 7 && ex.data.question7.complete == true) {
@@ -1130,10 +1130,10 @@ var main = function(ex) {
                 clearCanvas();
                 nextQButton.disable();
                 setTimeout(nextQuestion, 500);
-                nextQButton.enable();
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
+                nextQButton.enable();
                 drawQ8();
             }
         }
