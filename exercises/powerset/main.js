@@ -282,6 +282,29 @@ var main = function(ex) {
         questions[1].question = ""; //bc question 1 is dynamically generated
     }
 
+    function clearCanvas(){
+        ex.graphics.ctx.clearRect(0,0,canvasWidth,canvasHeight);
+    }
+
+    function drawArrow(arrowX, arrowY) {
+
+        var sizeOfArrow = 50;
+        ex.graphics.ctx.lineWidth=5;
+        ex.graphics.ctx.strokeStyle = '#ff0000';
+        ex.graphics.ctx.moveTo(arrowX+sizeOfArrow/2, arrowY);
+        ex.graphics.ctx.lineTo(arrowX+sizeOfArrow, arrowY+sizeOfArrow/2);
+        ex.graphics.ctx.stroke();
+
+        ex.graphics.ctx.moveTo(arrowX, arrowY+sizeOfArrow/2);
+        ex.graphics.ctx.lineTo(arrowX+sizeOfArrow, arrowY+sizeOfArrow/2);
+        ex.graphics.ctx.stroke();
+
+        ex.graphics.ctx.moveTo(arrowX+sizeOfArrow/2, arrowY+sizeOfArrow);
+        ex.graphics.ctx.lineTo(arrowX+sizeOfArrow, arrowY+sizeOfArrow/2);
+        ex.graphics.ctx.stroke();
+    }
+
+
     //return a list of integer of length listLength, values from 0 to 9
     function generateList() {
         var arr = [];
@@ -1102,7 +1125,7 @@ var main = function(ex) {
         else if (state.questionNum == 7 && ex.data.question7.complete == true) {
             if (ex.data.question8.started == false){
                 ex.data.question8.started = true;
-                img.remove();
+                clearCanvas();
                 setTimeout(nextQuestion, 500);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
@@ -1111,7 +1134,7 @@ var main = function(ex) {
             }
         }
         else if (state.questionNum == 8 && ex.data.question8.complete == true) {
-            img.remove();
+            clearCanvas();
             drawQ9();
         }
     }
@@ -1548,10 +1571,7 @@ var main = function(ex) {
 
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
-        img = ex.createImage(xOrigin,yOrigin,"arrow.png",{
-        width: "50px",
-        height:"50px"
-        });
+        drawArrow(xOrigin-5, yOrigin-5);
 
     }
 
@@ -1628,10 +1648,7 @@ var main = function(ex) {
         questionObjects.question = question;
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
-        img = ex.createImage(xOrigin,yOrigin,"arrow.png",{
-        width: "50px",
-        height:"50px"
-        });
+        drawArrow(xOrigin-5, yOrigin-5);
     }
 
    //Generates answers for question 9 of the quiz
