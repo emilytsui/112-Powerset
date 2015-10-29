@@ -1117,11 +1117,11 @@ var main = function(ex) {
                 ex.data.question7.started = true;
                 nextQButton.disable();
                 setTimeout(nextQuestion, 500);
-                nextQButton.enable();
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
                 drawQ7();
+                nextQButton.enable();
             }
         }
         else if (state.questionNum == 7 && ex.data.question7.complete == true) {
