@@ -1115,7 +1115,9 @@ var main = function(ex) {
         else if (state.questionNum == 6 && ex.data.question6.complete == true) {
             if (ex.data.question7.started == false){
                 ex.data.question7.started = true;
+                nextQButton.disable();
                 setTimeout(nextQuestion, 500);
+                nextQButton.enable();
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1126,7 +1128,9 @@ var main = function(ex) {
             if (ex.data.question8.started == false){
                 ex.data.question8.started = true;
                 clearCanvas();
+                nextQButton.disable();
                 setTimeout(nextQuestion, 500);
+                nextQButton.enable();
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
