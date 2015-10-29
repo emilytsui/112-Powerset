@@ -1054,7 +1054,7 @@ var main = function(ex) {
                 questionObjects[key].remove();
             }
             nextQButton.disable();
-            state.recursiveDepth++; 
+            state.recursiveDepth++;
             drawReturn();
             state.recursiveDepth--;
             return; // so they can reflect on answer before moving on to next step
@@ -1090,7 +1090,7 @@ var main = function(ex) {
                 }
                 if (state.recursiveDepth != 0) state.isSubstituting = true;
                 state.recursiveDepth--;
-                
+
             }
         }
 
@@ -1573,6 +1573,16 @@ var main = function(ex) {
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
         drawArrow(xOrigin-5, yOrigin-5);
 
+    }
+
+    function shuffle(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
     }
 
    //Generates answers for question 8 of the quiz
