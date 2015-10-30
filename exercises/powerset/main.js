@@ -1594,30 +1594,26 @@ var main = function(ex) {
         pset = powerset(fullList);
         // The correct answer for Q8
         var correct = [];
-        for (var i = 0 ;i < pset.length; i++){
+        for (var i = 0; i < pset.length; i++){
             if (i % 2 != 0){
-                if (i!=pset.length - 1){
-                    correct += xToString([pset[i]]) + ", ";
-                }else{
-                    correct += xToString([pset[i]]);
-                }
+                correct.push(pset[i])
             }
         }
         // The answer is implemented in a way such that
         // lists longer than 3 can also be used for quiz.
-        var selections = []
+        var answer = xToString(correct);
+        var selections = [];
         cIndex = Math.round(Math.random() * (numSelections-1));
 
         // keep pushing to selections until we get enough options to fill it
         while(selections.length != numSelections) {
-            n = Math.round(Math.random() * (pset.length-1));
-            if ( pset[n].length < fullList.length &&
-                 xToString(pset[n]) != xToString(correct) &&
-                 selections.indexOf(pset[n]) == -1) {
-                selections.push(xToString(pset[n]));
+            var temp = xToString(shuffle(correct));
+            if (temp != answer &&
+                selections.indexOf(temp) == -1) {
+                selections.push(temp);
             }
         }
-        selections[cIndex] = correct;
+        selections[cIndex] = answer;
         ex.data.question8.answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
@@ -1672,15 +1668,15 @@ var main = function(ex) {
         var correct = xToString(pset);
         // The answer is implemented in a way such that
         // lists longer than 3 can also be used for quiz.
-        var selections = []
+        var selections = [];
         cIndex = Math.round(Math.random() * (numSelections-1));
         // keep pushing to selections until we get enough options to fill it
         while(selections.length != numSelections) {
             n = Math.round(Math.random() * (pset.length-1));
-            if ( pset[n].length < fullList.length &&
-                 xToString(pset[n]) != xToString(correct) &&
-                 selections.indexOf(pset[n]) == -1) {
-                selections.push(xToString(pset[n]));
+            var temp = xToString(shuffle(pset));
+            if ( temp != correct &&
+                 selections.indexOf(temp) == -1) {
+                selections.push(temp);
             }
         }
         selections[cIndex] = correct;
