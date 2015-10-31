@@ -3,8 +3,7 @@
  * @author Group 5 - Max, Emily, Andy
  */
 var main = function(ex) {
-	ex.data = {
-    "meta": {
+	ex.data.meta = {
         "author": "",
         "email": "",
         "title": "Powerset",
@@ -18,13 +17,13 @@ var main = function(ex) {
         "menuDisplayName": "Powerset",
         "requires": {
         }
-    },
-    "code": {
+    }
+    ex.data.code = {
         "lang": "python",
         "size": "small",
         "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
-    },
-    "state": {
+    }
+    ex.data.state = {
         "listLength": 3,
         "recursiveCalls": [],
         "prevFns": [],
@@ -41,60 +40,60 @@ var main = function(ex) {
         "rectWidth": 0,
         "rectHeight": 0,
         "visualList": []
-    },
-    "questionCode": {
+    }
+    ex.data.questionCode = {
         "lang": "python",
         "size": "medium",
         "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
-    },
-    "question1": {
+    }
+    ex.data.question1 = {
         "question": "",
         "answer": -1,
         "selected": -1,
         "complete": false,
         "finalCorrect": false
-    },
-    "question2": {
+    }
+    ex.data.question2 = {
         "question": "What will the next recursive call be?",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
         "finalCorrect": false
-    },
-    "question3": {
+    }
+    ex.data.question3 = {
         "question": "What will the list at this location be?",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
         "finalCorrect": false
-    },
-    "question4": {
+    }
+    ex.data.question4 = {
         "question": "What will the next recursive call be?",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
         "finalCorrect": false
-    },
-    "question5": {
+    }
+    ex.data.question5 = {
         "question": "What will be the result of this last recursive call?",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
         "finalCorrect": false
-    },
-    "question6": {
+    }
+    ex.data.question6 = {
         "question": "",
         "options": [],
         "answer": -1,
         "selected": -1,
         "complete": false,
         "finalCorrect": false
-    },
-    "question7": {
+    }
+    ex.data.question7 = {
         "question": "What is the line of the code primarily associated with the action pointed by the arrow?",
         "options": [],
         "answer": -1,
@@ -102,8 +101,8 @@ var main = function(ex) {
         "complete": false,
         "finalCorrect": false,
         "started": false
-    },
-    "question8": {
+    }
+    ex.data.question8 = {
         "question": "What is the result list from performing the action pointed by the arrow?",
         "options": [],
         "answer": -1,
@@ -111,8 +110,8 @@ var main = function(ex) {
         "complete": false,
         "finalCorrect": false,
         "started": false
-    },
-    "question9": {
+    }
+    ex.data.question9 = {
         "question": "What is the resulting list from initial call?",
         "options": [],
         "answer": -1,
@@ -121,7 +120,8 @@ var main = function(ex) {
         "finalCorrect": false,
         "started": false
     }
-}
+
+    
 
     ex.data.meta.mode = "practice";
     // ex.data.meta.mode = "quiz-immediate";
