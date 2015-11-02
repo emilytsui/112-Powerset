@@ -287,6 +287,8 @@ var main = function(ex) {
     }
 
     function drawArrow(arrowX, arrowY) {
+        console.log((arrowX, arrowY));
+        ex.graphics.ctx.moveTo(arrowX, arrowY);
 
         var sizeOfArrow = 50;
         ex.graphics.ctx.lineWidth=5;
@@ -1125,9 +1127,9 @@ var main = function(ex) {
             }
         }
         else if (state.questionNum == 7 && ex.data.question7.complete == true) {
+            clearCanvas();
             if (ex.data.question8.started == false){
                 ex.data.question8.started = true;
-                clearCanvas();
                 nextQButton.disable();
                 setTimeout(nextQuestion, 500);
                 // Fake next click for just once, set the timer to ensure
@@ -1658,6 +1660,7 @@ var main = function(ex) {
         questionObjects.question = question;
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
+        clearCanvas();
         drawArrow(xOrigin-5, yOrigin-5);
     }
 
