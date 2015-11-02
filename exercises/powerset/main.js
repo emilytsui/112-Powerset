@@ -283,14 +283,17 @@ var main = function(ex) {
     }
 
     function clearCanvas(){
+        console.log("clearCanvas")
         ex.graphics.ctx.clearRect(0,0,canvasWidth,canvasHeight);
     }
 
     function drawArrow(arrowX, arrowY) {
-        console.log((arrowX, arrowY));
+        console.log("drawArrow")
+        console.log(arrowX);
         ex.graphics.ctx.moveTo(arrowX, arrowY);
 
         var sizeOfArrow = 50;
+        ex.graphics.ctx.beginPath();
         ex.graphics.ctx.lineWidth=5;
         ex.graphics.ctx.strokeStyle = '#ff0000';
         ex.graphics.ctx.moveTo(arrowX+sizeOfArrow/2, arrowY);
@@ -1118,7 +1121,7 @@ var main = function(ex) {
             if (ex.data.question7.started == false){
                 ex.data.question7.started = true;
                 nextQButton.disable();
-                setTimeout(nextQuestion, 500);
+                setTimeout(nextQuestion, animationDuration);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1127,11 +1130,11 @@ var main = function(ex) {
             }
         }
         else if (state.questionNum == 7 && ex.data.question7.complete == true) {
-            clearCanvas();
             if (ex.data.question8.started == false){
                 ex.data.question8.started = true;
                 nextQButton.disable();
-                setTimeout(nextQuestion, 500);
+                clearCanvas();
+                setTimeout(nextQuestion, animationDuration);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1660,8 +1663,8 @@ var main = function(ex) {
         questionObjects.question = question;
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
-        clearCanvas();
         drawArrow(xOrigin-5, yOrigin-5);
+
     }
 
    //Generates answers for question 9 of the quiz
