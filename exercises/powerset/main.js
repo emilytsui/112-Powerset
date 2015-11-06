@@ -46,14 +46,17 @@ var main = function(ex) {
         "size": "small",
         "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
     }
-    ex.data.question1 = {
+    ex.data.question = []
+    for (i = 0; i < 10; i++) 
+        ex.data.question.push({})
+    ex.data.question[1] = {
         "question": "",
         "answer": -1,
         "selected": -1,
         "complete": false,
         "finalCorrect": false
     }
-    ex.data.question2 = {
+    ex.data.question[2] = {
         "question": "What will the next recursive call be?",
         "options": [],
         "answer": -1,
@@ -61,7 +64,7 @@ var main = function(ex) {
         "complete": false,
         "finalCorrect": false
     }
-    ex.data.question3 = {
+    ex.data.question[3] = {
         "question": "What will the list at this location be?",
         "options": [],
         "answer": -1,
@@ -69,7 +72,7 @@ var main = function(ex) {
         "complete": false,
         "finalCorrect": false
     }
-    ex.data.question4 = {
+    ex.data.question[4] = {
         "question": "What will the next recursive call be?",
         "options": [],
         "answer": -1,
@@ -77,7 +80,7 @@ var main = function(ex) {
         "complete": false,
         "finalCorrect": false
     }
-    ex.data.question5 = {
+    ex.data.question[5] = {
         "question": "What will be the result of this last recursive call?",
         "options": [],
         "answer": -1,
@@ -85,7 +88,7 @@ var main = function(ex) {
         "complete": false,
         "finalCorrect": false
     }
-    ex.data.question6 = {
+    ex.data.question[6] = {
         "question": "",
         "options": [],
         "answer": -1,
@@ -93,7 +96,7 @@ var main = function(ex) {
         "complete": false,
         "finalCorrect": false
     }
-    ex.data.question7 = {
+    ex.data.question[7] = {
         "question": "What is the line of the code primarily associated with the action pointed by the arrow?",
         "options": [],
         "answer": -1,
@@ -102,7 +105,7 @@ var main = function(ex) {
         "finalCorrect": false,
         "started": false
     }
-    ex.data.question8 = {
+    ex.data.question[8] = {
         "question": "What is the result list from performing the action pointed by the arrow?",
         "options": [],
         "answer": -1,
@@ -111,7 +114,7 @@ var main = function(ex) {
         "finalCorrect": false,
         "started": false
     }
-    ex.data.question9 = {
+    ex.data.question[9] = {
         "question": "What is the resulting list from initial call?",
         "options": [],
         "answer": -1,
@@ -268,14 +271,13 @@ var main = function(ex) {
     }
 
     function resetQuestions () {
-        questions = [ex.data.question1, ex.data.question2, ex.data.question3,
-                     ex.data.question4, ex.data.question5, ex.data.question6,
-                     ex.data.question7, ex.data.question8, ex.data.question9];
+        questions = [ex.data.question[1], ex.data.question[2], ex.data.question[3],
+                     ex.data.question[4], ex.data.question[5], ex.data.question[6],
+                     ex.data.question[7], ex.data.question[8], ex.data.question[9]];
         for (var i = 0; i < questions.length; i++) {
             questions[i].options = [];
             questions[i].answer = -1;
             questions[i].selected = -1;
-            questions[i].complete = false;
             questions[i].finalCorrect = false;
         }
         questions[1].question = ""; //bc question 1 is dynamically generated
@@ -713,7 +715,7 @@ var main = function(ex) {
         thisCall.h6 = h6; //So we can remove the element later on
 
         //Solve the layer conflict; draw the button after the header is created
-        if (state.recursiveDepth == 0)
+        if (state.recursiveDepth == 0 && !state.isQuizzing)
             quizButton = ex.createButton(canvasWidth*(8/9)-10, 10,
                                      "Start Quiz").on("click", startQuiz)
     }
@@ -731,6 +733,7 @@ var main = function(ex) {
         ////
 
         //remove header of the callee
+
         state.recursiveCalls[state.recursiveDepth+1].h6.hide();
 
         var listText = state.recursiveCalls[state.recursiveDepth+1].h6.text();
@@ -904,165 +907,204 @@ var main = function(ex) {
         setTimeout(showMergeResult, 500);
     }
 
-    var img;
+
+
+
+
+
+
+
+
+    var quizState = {
+        "quizList": [],
+        "quizNumber": 0 // quiz that have taken 
+    }
+
+    function updateState(i, l){
+        if (l != undefined)
+            quizState.quizList = l;
+        if (i > quizState.quizNumber) 
+            quizState.quizNumber = i;
+        ex.saveState(quizState)
+    }
+
+
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
-        if (state.questionNum == 1 && ex.data.question1.complete == false) {
-            if (questionObjects.input.text() == "") {
-                ex.alert("Please type your answer in the input box.",
-                    {transition: "alert-long"});
-                return; // So they are forced to input an answer
+        console.log("****************")
+        console.log(state.recursiveDepth)
+        console.log("conmpare")
+        console.log(quizNumber)
+        console.log( state.questionNum)
+        if (quizNumber < state.questionNum){
+            if (state.questionNum == 1 && ex.data.question[1].complete == false) {
+                if (questionObjects.input.text() == "") {
+                    ex.alert("Please type your answer in the input box.",
+                        {transition: "alert-long"});
+                    return; // So they are forced to input an answer
+                } else {
+                    updateState(1)
+                }
+                questionObjects.input.disable();
+                ex.data.question[1].complete = true;
+                if (ex.data.question[1].answer == questionObjects.input.text().trim()) {
+                    ex.data.question[1].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[1].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect. The correct answer is " +
+                        ex.data.question[1].answer,
+                        {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            questionObjects.input.disable();
-            ex.data.question1.complete = true;
-            if (ex.data.question1.answer == questionObjects.input.text().trim()) {
-                ex.data.question1.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            else if (state.questionNum == 2 && ex.data.question[2].complete == false) {
+                updateState(2)
+                questionObjects.dropdown.disable();
+                ex.data.question[2].complete = true;
+                if (ex.data.question[2].answer == ex.data.question[2].selected) {
+                    ex.data.question[2].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[2].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            else {
-                ex.data.question1.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect. The correct answer is " +
-                    ex.data.question1.answer,
-                    {color: "red", transition: "alert-long"});
+            else if (state.questionNum == 3 && ex.data.question[3].complete == false) {
+                updateState(3)
+                questionObjects.dropdown.disable();
+                ex.data.question[3].complete = true;
+                if (ex.data.question[3].answer == ex.data.question[3].selected) {
+                    ex.data.question[3].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[3].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 2 && ex.data.question2.complete == false) {
-            questionObjects.dropdown.disable();
-            ex.data.question2.complete = true;
-            if (ex.data.question2.answer == ex.data.question2.selected) {
-                ex.data.question2.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            else if (state.questionNum == 4 && ex.data.question[4].complete == false) {
+                updateState(4)
+                questionObjects.dropdown.disable();
+                ex.data.question[4].complete = true;
+                if (ex.data.question[4].answer == ex.data.question[4].selected) {
+                    ex.data.question[4].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[4].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            else {
-                ex.data.question2.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            else if (state.questionNum == 5 && ex.data.question[5].complete == false) {
+                updateState(5)
+                questionObjects.dropdown.disable();
+                ex.data.question[5].complete = true;
+                if (ex.data.question[5].answer == ex.data.question[5].selected) {
+                    ex.data.question[5].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[5].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 3 && ex.data.question3.complete == false) {
-            questionObjects.dropdown.disable();
-            ex.data.question3.complete = true;
-            if (ex.data.question3.answer == ex.data.question3.selected) {
-                ex.data.question3.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            else if (state.questionNum == 6 && ex.data.question[6].complete == false) {
+                if (questionObjects.input.text() == "") {
+                    ex.alert("Please type your answer in the input box.",
+                        {transition: "alert-long"});
+                    return; // So they are forced to input an answer
+                } else {
+                    updateState(6)
+                }
+                questionObjects.input.disable();
+                ex.data.question[6].complete = true;
+                if (ex.data.question[6].answer == questionObjects.input.text().trim()) {
+                    ex.data.question[6].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[6].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect. The correct answer is " +
+                        ex.data.question[6].answer,
+                        {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            else {
-                ex.data.question3.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            else if (state.questionNum == 7 && ex.data.question[7].complete == false) {
+                updateState(7)
+                questionObjects.dropdown.disable();
+                ex.data.question[7].complete = true;
+                if (ex.data.question[7].answer == ex.data.question[7].selected) {
+                    ex.data.question[7].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[7].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 4 && ex.data.question4.complete == false) {
-            questionObjects.dropdown.disable();
-            ex.data.question4.complete = true;
-            if (ex.data.question4.answer == ex.data.question4.selected) {
-                ex.data.question4.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
+            else if (state.questionNum == 8 && ex.data.question[8].complete == false) {
+                updateState(8)
+                questionObjects.dropdown.disable();
+                ex.data.question[8].complete = true;
+                if (ex.data.question[8].answer == ex.data.question[8].selected) {
+                    ex.data.question[8].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[8].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            else {
-                ex.data.question4.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+            else if (state.questionNum == 9 && ex.data.question[9].complete == false) {
+                updateState(9)
+                questionObjects.dropdown.disable();
+                ex.data.question[9].complete = true;
+                if (quizNumber < 9) nextQButton.disable();
+                state.recursiveDepth++;
+                drawReturn();
+                state.recursiveDepth--;
+                if (ex.data.question[9].answer == ex.data.question[9].selected) {
+                    ex.data.question[9].finalCorrect = true;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Correct!", {color: "green", transition: "alert-long"});
+                }
+                else {
+                    ex.data.question[9].finalCorrect = false;
+                    if (mode == "quiz-delay") return;
+                    ex.alert("Incorrect", {color: "red", transition: "alert-long"});
+                }
+                for (var key in questionObjects) {
+                    questionObjects[key].remove();
+                }
+                return; // so they can reflect on answer before moving on to next step
             }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 5 && ex.data.question5.complete == false) {
-            questionObjects.dropdown.disable();
-            ex.data.question5.complete = true;
-            if (ex.data.question5.answer == ex.data.question5.selected) {
-                ex.data.question5.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
-            }
-            else {
-                ex.data.question5.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
-            }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 6 && ex.data.question6.complete == false) {
-            if (questionObjects.input.text() == "") {
-                ex.alert("Please type your answer in the input box.",
-                    {transition: "alert-long"});
-                return; // So they are forced to input an answer
-            }
-            questionObjects.input.disable();
-            ex.data.question6.complete = true;
-            if (ex.data.question6.answer == questionObjects.input.text().trim()) {
-                ex.data.question6.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
-            }
-            else {
-                ex.data.question6.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect. The correct answer is " +
-                    ex.data.question6.answer,
-                    {color: "red", transition: "alert-long"});
-            }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 7 && ex.data.question7.complete == false) {
-            questionObjects.dropdown.disable();
-            ex.data.question7.complete = true;
-            if (ex.data.question7.answer == ex.data.question7.selected) {
-                ex.data.question7.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
-            }
-            else {
-                ex.data.question7.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
-            }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 8 && ex.data.question8.complete == false) {
-            questionObjects.dropdown.disable();
-            ex.data.question8.complete = true;
-            if (ex.data.question8.answer == ex.data.question8.selected) {
-                ex.data.question8.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
-            }
-            else {
-                ex.data.question8.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
-            }
-            return; // so they can reflect on answer before moving on to next step
-        }
-        else if (state.questionNum == 9 && ex.data.question9.complete == false) {
-            questionObjects.dropdown.disable();
-            ex.data.question9.complete = true;
-            nextQButton.disable();
-            state.recursiveDepth++;
-            drawReturn();
-            state.recursiveDepth--;
-            if (ex.data.question9.answer == ex.data.question9.selected) {
-                ex.data.question9.finalCorrect = true;
-                if (mode == "quiz-delay") return;
-                ex.alert("Correct!", {color: "green", transition: "alert-long"});
-            }
-            else {
-                ex.data.question9.finalCorrect = false;
-                if (mode == "quiz-delay") return;
-                ex.alert("Incorrect", {color: "red", transition: "alert-long"});
-            }
-            for (var key in questionObjects) {
-                questionObjects[key].remove();
-            }
-            return; // so they can reflect on answer before moving on to next step
         }
 
 
@@ -1089,8 +1131,11 @@ var main = function(ex) {
                 state.isSubstituting = false;
             } else {
             //Normal return
-                if (state.questionNum <=8 && ex.data.question8.complete == false)
+                if (state.questionNum <=8 && ex.data.question[8].complete == false)
                 {
+                    drawReturn();
+                } else if (quizNumber >= 8){
+                    //this bug costs me 1 hour. finaly solved.
                     drawReturn();
                 }
                 if (state.recursiveDepth != 0) state.isSubstituting = true;
@@ -1100,27 +1145,27 @@ var main = function(ex) {
         }
 
         // Moves on to the next question
-        if (state.questionNum == 1 && ex.data.question1.complete == true)
+        if (state.questionNum == 1 && ex.data.question[1].complete == true)
             drawQ2();
-        else if (state.questionNum == 2 && ex.data.question2.complete == true)
+        else if (state.questionNum == 2 && ex.data.question[2].complete == true)
             drawQ3();
-        else if (state.questionNum == 3 && ex.data.question3.complete == true) {
+        else if (state.questionNum == 3 && ex.data.question[3].complete == true) {
             state.recursiveCalls[state.recursiveDepth-2].h3.show();
             drawQ4();
         }
-        else if (state.questionNum == 4 && ex.data.question4.complete == true) {
+        else if (state.questionNum == 4 && ex.data.question[4].complete == true) {
             q5Header = state.recursiveCalls[state.recursiveDepth-1].h2;
             q5Header.hide();
             drawQ5();
         }
-        else if (state.questionNum == 5 && ex.data.question5.complete == true) {
+        else if (state.questionNum == 5 && ex.data.question[5].complete == true) {
             //q5Header.show();
             drawQ6();
         }
-        else if (state.questionNum == 6 && ex.data.question6.complete == true) {
-            if (ex.data.question7.started == false){
-                ex.data.question7.started = true;
-                nextQButton.disable();
+        else if (state.questionNum == 6 && ex.data.question[6].complete == true) {
+            if (ex.data.question[7].started == false){
+                ex.data.question[7].started = true;
+                if (quizNumber < 7) nextQButton.disable();
                 setTimeout(nextQuestion, animationDuration);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
@@ -1129,10 +1174,10 @@ var main = function(ex) {
                 drawQ7();
             }
         }
-        else if (state.questionNum == 7 && ex.data.question7.complete == true) {
-            if (ex.data.question8.started == false){
-                ex.data.question8.started = true;
-                nextQButton.disable();
+        else if (state.questionNum == 7 && ex.data.question[7].complete == true) {
+            if (ex.data.question[8].started == false){
+                ex.data.question[8].started = true;
+                if (quizNumber < 8) nextQButton.disable();
                 clearCanvas();
                 setTimeout(nextQuestion, animationDuration);
                 // Fake next click for just once, set the timer to ensure
@@ -1142,7 +1187,7 @@ var main = function(ex) {
                 drawQ8();
             }
         }
-        else if (state.questionNum == 8 && ex.data.question8.complete == true) {
+        else if (state.questionNum == 8 && ex.data.question[8].complete == true) {
             clearCanvas();
             drawQ9();
         }
@@ -1164,9 +1209,27 @@ var main = function(ex) {
             ex.chromeElements.newButton.disable();
         }
 
+
         state.isQuizzing = true;
         quizList = generateList();
         ex.data.state.quizList = quizList;
+
+        //retrieving savedState
+        console.log("savedState")
+        console.log(ex.data.instance.state)
+        if (ex.data.instance.state != null && ex.data.instance.state.quizList != undefined
+            && ex.data.instance.state.quizList.length != 0) {
+            quizState = ex.data.instance.state
+            quizList = quizState.quizList;
+            quizNumber = quizState.quizNumber;
+            for (i = 0; i <= quizNumber; i++) {
+                ex.data.question[i].complete = true
+            }
+        } else {
+            quizNumber = 0;
+            updateState(0, quizList)
+        }
+
 
         // Removing all the remaining headers on the screen
         for (var i = 0; i < state.recursiveCalls.length; i++) {
@@ -1209,21 +1272,23 @@ var main = function(ex) {
         // console.log("Question 1");
 
         state.questionNum = 1;
-        ex.data.question1.question = "How many total calls to powerset will " +
+        ex.data.question[1].question = "How many total calls to powerset will " +
                                  "there be as a result of calling powerset(" +
                                  xToString(quizList) + ")?";
-        ex.data.question1.answer = quizList.length + 1;
+        ex.data.question[1].answer = quizList.length + 1;
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question1.question, {size: "large"});
+                            ex.data.question[1].question, {size: "large"});
 
         questionObjects.question = question;
 
         var q1Input = ex.createInputText(xQuestion,yQuestion + 60,"Answer (e.g.: 0)");
         questionObjects["input"] = q1Input;
 
+        //if have done this q1, freeze the input
+        if (quizState.quizNumber >= 1) q1Input.disable()
     }
 
     //Generates answers for question 2 of the quiz
@@ -1244,31 +1309,33 @@ var main = function(ex) {
             }
         }
         selections[cIndex] = correct;
-        ex.data.question2.answer = cIndex;
+        ex.data.question[2].answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question2.options.push("powerset( [" + selections[i] + "] )");
+            ex.data.question[2].options.push("powerset( [" + selections[i] + "] )");
         }
     }
 
     // Draws question 2 of quiz mode
     function drawQ2() {
+
         for (var key in questionObjects) {
             questionObjects[key].remove();
         }
+        console.log("drawQ2")
         state.questionNum = 2;
 
-        nextQButton.disable();
+        if (quizNumber < 2) nextQButton.disable();
         genQ2Answers(quizList, 4);
-        // console.log(xToString(ex.data.question2.options));
+        // console.log(xToString(ex.data.question[2].options));
         var elements = {};
-        for (var i = 0; i < ex.data.question2.options.length; i++) {
-            elements[ex.data.question2.options[i]] = q2Select(i);
+        for (var i = 0; i < ex.data.question[2].options.length; i++) {
+            elements[ex.data.question[2].options[i]] = q2Select(i);
         }
 
         function q2Select(i) {
             return function() {
-                ex.data.question2.selected = i;
+                ex.data.question[2].selected = i;
                 nextQButton.enable();
             }
         }
@@ -1285,10 +1352,13 @@ var main = function(ex) {
         });
         questionObjects["dropdown"] = q2Dropdown;
 
+        //if have done
+        if (quizNumber >= 2) q2Dropdown.disable()
+
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question2.question, {size: "large"});
+                            ex.data.question[2].question, {size: "large"});
 
         questionObjects.question = question;
 
@@ -1312,10 +1382,10 @@ var main = function(ex) {
             }
         }
         selections[cIndex] = correct;
-        ex.data.question3.answer = cIndex;
+        ex.data.question[3].answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question3.options.push("[" + selections[i] + "]");
+            ex.data.question[3].options.push("[" + selections[i] + "]");
         }
     }
 
@@ -1325,17 +1395,17 @@ var main = function(ex) {
             questionObjects[key].remove();
         }
         state.questionNum = 3;
-        nextQButton.disable();
+        if (quizNumber < 3) nextQButton.disable();
         genQ3Answers(quizList, 4);
-        // console.log(xToString(ex.data.question3.options));
+        // console.log(xToString(ex.data.question[3].options));
         var elements = {};
-        for (var i = 0; i < ex.data.question3.options.length; i++) {
-            elements[ex.data.question3.options[i]] = q3Select(i);
+        for (var i = 0; i < ex.data.question[3].options.length; i++) {
+            elements[ex.data.question[3].options[i]] = q3Select(i);
         }
 
         function q3Select(i) {
             return function() {
-                ex.data.question3.selected = i;
+                ex.data.question[3].selected = i;
                 nextQButton.enable();
             }
         }
@@ -1353,10 +1423,12 @@ var main = function(ex) {
         });//The current coordinate heree is hardcoded. May be bugggy.
         questionObjects.dropdown = q3Dropdown;
 
+        if (quizNumber >= 3) q3Dropdown.disable()
+
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question3.question, {size: "large"});
+                            ex.data.question[3].question, {size: "large"});
 
         questionObjects.question = question;
 
@@ -1382,10 +1454,10 @@ var main = function(ex) {
             }
         }
         selections[cIndex] = correct;
-        ex.data.question4.answer = cIndex;
+        ex.data.question[4].answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question4.options.push("powerset( [" + selections[i] + "] )");
+            ex.data.question[4].options.push("powerset( [" + selections[i] + "] )");
         }
     }
 
@@ -1395,16 +1467,16 @@ var main = function(ex) {
             questionObjects[key].remove();
         }
         state.questionNum = 4;
-        nextQButton.disable();
+        if (quizNumber < 4) nextQButton.disable();
         genQ4Answers(quizList, 4);
         var elements = {};
-        for (var i = 0; i < ex.data.question4.options.length; i++) {
-            elements[ex.data.question4.options[i]] = q4Select(i);
+        for (var i = 0; i < ex.data.question[4].options.length; i++) {
+            elements[ex.data.question[4].options[i]] = q4Select(i);
         }
 
         function q4Select(i) {
             return function() {
-                ex.data.question4.selected = i;
+                ex.data.question[4].selected = i;
                 nextQButton.enable();
             }
         }
@@ -1420,11 +1492,12 @@ var main = function(ex) {
             elements: elements
         });
         questionObjects.dropdown = q4Dropdown;
+        if (quizNumber >= 4) q4Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question4.question, {size: "large"});
+                            ex.data.question[4].question, {size: "large"});
 
         questionObjects.question = question;
 
@@ -1455,10 +1528,10 @@ var main = function(ex) {
         }
         selections[cIndex] = correct;
         selections[dIndex] = dummy;
-        ex.data.question5.answer = cIndex;
+        ex.data.question[5].answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question5.options.push(selections[i]);
+            ex.data.question[5].options.push(selections[i]);
         }
     }
 
@@ -1468,17 +1541,18 @@ var main = function(ex) {
             questionObjects[key].remove();
         }
         state.questionNum = 5;
-        nextQButton.disable();
+
+        if (quizNumber < 5) nextQButton.disable();
 
         genQ5Answers(quizList, 4);
         var elements = {};
-        for (var i = 0; i < ex.data.question5.options.length; i++) {
-            elements[xToString(ex.data.question5.options[i])] = q5Select(i);
+        for (var i = 0; i < ex.data.question[5].options.length; i++) {
+            elements[xToString(ex.data.question[5].options[i])] = q5Select(i);
         }
 
         function q5Select(i) {
             return function() {
-                ex.data.question5.selected = i;
+                ex.data.question[5].selected = i;
                 nextQButton.enable();
             }
         }
@@ -1492,11 +1566,12 @@ var main = function(ex) {
             elements: elements
         });
         questionObjects.dropdown = q5Dropdown;
+        if (quizNumber >= 5) q5Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question5.question, {size: "large"});
+                            ex.data.question[5].question, {size: "large"});
         questionObjects.question = question;
 
     }
@@ -1514,20 +1589,22 @@ var main = function(ex) {
         }
         state.questionNum = 6;
 
+
         var tempList = quizList.slice(quizList.length-1, quizList.length);
-        ex.data.question6.question = "What is the length of the list that " +
+        ex.data.question[6].question = "What is the length of the list that " +
                                  "results from powerset(" +
                                  xToString(tempList) + ")?";
-        ex.data.question6.answer = Math.pow(2, tempList.length);
+        ex.data.question[6].answer = Math.pow(2, tempList.length);
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question6.question, {size: "large"});
+                            ex.data.question[6].question, {size: "large"});
 
         questionObjects.question = question;
 
         var q6Input = ex.createInputText(xQuestion,yQuestion + 60,"Answer (e.g.: 0)");
+        if (quizNumber >= 6) q6Input.disable()
         questionObjects.input = q6Input;
 
     }
@@ -1543,10 +1620,10 @@ var main = function(ex) {
         selections = answers;
         cIndex = 2;
 
-        ex.data.question7.answer = cIndex;
+        ex.data.question[7].answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question7.options.push(selections[i]);
+            ex.data.question[7].options.push(selections[i]);
         }
     }
 
@@ -1556,18 +1633,19 @@ var main = function(ex) {
             questionObjects[key].remove();
         }
         state.questionNum = 7;
-        nextQButton.disable();
+
+        if (quizNumber < 7) nextQButton.disable();
 
         genQ7Answers(quizList, 4);
-        // console.log(ex.data.question7.options);
+        // console.log(ex.data.question[7].options);
         var elements = {};
-        for (var i = 0; i < ex.data.question7.options.length; i++) {
-            elements[ex.data.question7.options[i]] = q7Select(i);
+        for (var i = 0; i < ex.data.question[7].options.length; i++) {
+            elements[ex.data.question[7].options[i]] = q7Select(i);
         }
 
         function q7Select(i) {
             return function() {
-                ex.data.question7.selected = i;
+                ex.data.question[7].selected = i;
                 nextQButton.enable();
             }
         }
@@ -1578,10 +1656,11 @@ var main = function(ex) {
             elements: elements
         });
         questionObjects.dropdown = q7Dropdown;
+        if (quizNumber >= 7) q7Dropdown.disable()
 
 
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question7.question, {size: "large"});
+                            ex.data.question[7].question, {size: "large"});
         questionObjects.question = question;
 
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
@@ -1625,10 +1704,10 @@ var main = function(ex) {
             }
         }
         selections[cIndex] = answer;
-        ex.data.question8.answer = cIndex;
+        ex.data.question[8].answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question8.options.push(selections[i]);
+            ex.data.question[8].options.push(selections[i]);
         }
 
     }
@@ -1639,18 +1718,19 @@ var main = function(ex) {
             questionObjects[key].remove();
         }
         state.questionNum = 8;
-        nextQButton.disable();
+
+        if (quizNumber < 8) nextQButton.disable();
 
         genQ8Answers(quizList, 4);
-        // console.log(ex.data.question8.options);
+        // console.log(ex.data.question[8].options);
         var elements = {};
-        for (var i = 0; i < ex.data.question8.options.length; i++) {
-            elements[ex.data.question8.options[i]] = q8Select(i);
+        for (var i = 0; i < ex.data.question[8].options.length; i++) {
+            elements[ex.data.question[8].options[i]] = q8Select(i);
         }
 
         function q8Select(i) {
             return function() {
-                ex.data.question8.selected = i;
+                ex.data.question[8].selected = i;
                 nextQButton.enable();
             }
         }
@@ -1661,10 +1741,11 @@ var main = function(ex) {
             elements: elements
         });
         questionObjects.dropdown = q8Dropdown;
+        if (quizNumber >= 8) q8Dropdown.disable()
 
 
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question8.question, {size: "large"});
+                            ex.data.question[8].question, {size: "large"});
 
         questionObjects.question = question;
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
@@ -1692,10 +1773,10 @@ var main = function(ex) {
             }
         }
         selections[cIndex] = correct;
-        ex.data.question9.answer = cIndex;
+        ex.data.question[9].answer = cIndex;
 
         for (var i = 0; i < selections.length; i++) {
-            ex.data.question9.options.push(selections[i]);
+            ex.data.question[9].options.push(selections[i]);
         }
 
     }
@@ -1706,18 +1787,19 @@ var main = function(ex) {
             questionObjects[key].remove();
         }
         state.questionNum = 9;
-        nextQButton.disable();
+
+        if (quizNumber < 9) nextQButton.disable();
 
         genQ9Answers(quizList, 4);
-        // console.log(ex.data.question9.options);
+        // console.log(ex.data.question[9].options);
         var elements = {};
-        for (var i = 0; i < ex.data.question9.options.length; i++) {
-            elements[ex.data.question9.options[i]] = q9Select(i);
+        for (var i = 0; i < ex.data.question[9].options.length; i++) {
+            elements[ex.data.question[9].options[i]] = q9Select(i);
         }
 
         function q9Select(i) {
             return function() {
-                ex.data.question9.selected = i;
+                ex.data.question[9].selected = i;
                 nextQButton.enable();
             }
         }
@@ -1732,9 +1814,10 @@ var main = function(ex) {
             elements: elements
         });
         questionObjects.dropdown = q9Dropdown;
+        if (quizNumber >= 9) q9Dropdown.disable()
 
         var question = ex.createParagraph(xQuestion, yQuestion,
-                            ex.data.question9.question, {size: "large"});
+                            ex.data.question[9].question, {size: "large"});
         questionObjects.question = question;
 
     }
