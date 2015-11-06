@@ -47,7 +47,7 @@ var main = function(ex) {
         "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
     }
     ex.data.question = []
-    for (i = 0; i < 10; i++) 
+    for (i = 0; i < 10; i++)
         ex.data.question.push({})
     ex.data.question[1] = {
         "question": "",
@@ -917,26 +917,32 @@ var main = function(ex) {
 
     var quizState = {
         "quizList": [],
-        "quizNumber": 0 // quiz that have taken 
+        "quizNumber": 0, // quiz that have taken
+        "quizScore": 0
     }
 
     function updateState(i, l){
         if (l != undefined)
             quizState.quizList = l;
-        if (i > quizState.quizNumber) 
+        if (i > quizState.quizNumber)
             quizState.quizNumber = i;
-        ex.saveState(quizState)
+
+        if (i >= 1 && i <= 9 && ex.data.questionNum[i].finalCorrect)
+            quizState.quizScore ++;
+
+        ex.saveState(quizState);
+        // console.log(quizState.quizScore);
     }
 
 
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
-        console.log("****************")
-        console.log(state.recursiveDepth)
-        console.log("conmpare")
-        console.log(quizNumber)
-        console.log( state.questionNum)
+        // console.log("****************")
+        // console.log(state.recursiveDepth)
+        // console.log("compare")
+        // console.log(quizNumber)
+        // console.log( state.questionNum)
         if (quizNumber < state.questionNum){
             if (state.questionNum == 1 && ex.data.question[1].complete == false) {
                 if (questionObjects.input.text() == "") {
@@ -944,7 +950,7 @@ var main = function(ex) {
                         {transition: "alert-long"});
                     return; // So they are forced to input an answer
                 } else {
-                    updateState(1)
+                    updateState(1);
                 }
                 questionObjects.input.disable();
                 ex.data.question[1].complete = true;
