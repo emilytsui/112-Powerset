@@ -622,6 +622,7 @@ var main = function(ex) {
                 var thisCall = state.recursiveCalls[depth];
                 thisCall.h1.remove();
                 thisCall.h2.remove();
+                thisCall.h3.remove();
             })
             ////
             var s1 = "powerset("+xToString(input)+")"
@@ -632,6 +633,9 @@ var main = function(ex) {
             var h2 = ex.createHeader(xOrigin, yOrigin + lineHeight, s2,
                                 {size:fontSize, textAlign:"right",
                                  transition:"fade"});
+            var s3 = "We are now in the base case.\
+             The funtion returns a value instead of calling itself."
+            var h3 =  ex.alert(s3,{color: "green", transition: "alert-long"});
             h2.width(blockWidth);
             h1.width(blockWidth);
             thisCall.h1 = h1;
@@ -671,6 +675,11 @@ var main = function(ex) {
                                  transition:"fade"});
         h3.width(blockWidth);
         thisCall.h3 = h3;
+
+        var s4 = "We are now in the recursive case.\
+         The function recursively calls itself. with a new set of arguments.";
+        var h4 =  ex.alert(s4,{color: "green", transition: "alert-long"});
+
     }
 
     //remove headers that representing function call
@@ -713,6 +722,9 @@ var main = function(ex) {
         if (state.recursiveDepth != 0) h6.width(blockWidth);
         else h6.width(canvasWidth);
         thisCall.h6 = h6; //So we can remove the element later on
+
+        var s7 = "The function returns with value" + s1;
+        var h7 =  ex.alert(s7,{color: "green", transition: "alert-long"});
 
         //Solve the layer conflict; draw the button after the header is created
         if (state.recursiveDepth == 0 && !state.isQuizzing)
@@ -774,6 +786,9 @@ var main = function(ex) {
         // console.log("drawAdd1 depth: " + state.recursiveDepth)
 
         var thisCall = state.recursiveCalls[state.recursiveDepth];
+        var s= "This step corresponds to \n allSubsets += [subset]";
+        ex.alert(s,{color: "green", transition: "alert-long"});
+
 
         function reviseH2() {
             // console.log("revising in drawAdd1");
@@ -848,6 +863,8 @@ var main = function(ex) {
         thisCall.h5.hide();
         thisCall.h5.text(xToString(addE("_", returningList)));
         thisCall.h5.show();
+        var s= "This step corresponds to \n allSubsets += [[a[0]] + subset]";
+        ex.alert(s,{color: "green", transition: "alert-long"});
 
         //make animatio slower for this part
         animationDuration = 300;
