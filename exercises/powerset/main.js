@@ -435,9 +435,9 @@ var main = function(ex) {
 
 
         ///////// Code well containing powerset algorithm code
-        codeWell1 = ex.createCode(10, canvasHeight-180,
-                                      ex.data.code.display, ex.data.code);
-        codeWell1.show();
+        // codeWell1 = ex.createCode(10, canvasHeight-180,
+                                      // ex.data.code.display, ex.data.code);
+        // codeWell1.show();
         sep = Array(Math.round(canvasWidth/6)).join("*")
         //////// Separater at the center
         // var separater = ex.createHeader(0, canvasHeight*(10/16), sep,
@@ -679,6 +679,7 @@ var main = function(ex) {
         var s4 = "We are now in the recursive case.\
          The function recursively calls itself. with a new set of arguments.";
         var h4 =  ex.alert(s4,{color: "green", transition: "alert-long"});
+        h4.position(canvasWidth*(1/4), canvasHeight/2)
 
     }
 
@@ -725,6 +726,7 @@ var main = function(ex) {
 
         var s7 = "The function returns with value" + s1;
         var h7 =  ex.alert(s7,{color: "green", transition: "alert-long"});
+        h7.position(canvasWidth*(1/4), canvasHeight/2)
 
         //Solve the layer conflict; draw the button after the header is created
         if (state.recursiveDepth == 0 && !state.isQuizzing)
@@ -787,7 +789,8 @@ var main = function(ex) {
 
         var thisCall = state.recursiveCalls[state.recursiveDepth];
         var s= "This step corresponds to \n allSubsets += [subset]";
-        ex.alert(s,{color: "green", transition: "alert-long"});
+        var al = ex.alert(s,{color: "green", transition: "alert-long"});
+        al.position(canvasWidth*(1/4), canvasHeight/2)
 
 
         function reviseH2() {
@@ -864,7 +867,8 @@ var main = function(ex) {
         thisCall.h5.text(xToString(addE("_", returningList)));
         thisCall.h5.show();
         var s= "This step corresponds to \n allSubsets += [[a[0]] + subset]";
-        ex.alert(s,{color: "green", transition: "alert-long"});
+        var al = ex.alert(s,{color: "green", transition: "alert-long"});
+        al.position(canvasWidth*(1/4), canvasHeight/2)
 
         //make animatio slower for this part
         animationDuration = 300;
@@ -1268,7 +1272,7 @@ var main = function(ex) {
         skipButton.remove();
         nextButton.remove();
         quizButton.remove();
-        codeWell1.remove();
+        // codeWell1.remove();
 
         codeWell1 = ex.createCode(10, canvasHeight-180,
                           ex.data.questionCode.display, ex.data.questionCode);
