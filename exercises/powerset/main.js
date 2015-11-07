@@ -447,6 +447,7 @@ var main = function(ex) {
             resetMode = false;
             return;
         }
+        ex.chromeElements.instrButton.trigger("click");
         nextStep(); //To show the initial call of function
     }
 

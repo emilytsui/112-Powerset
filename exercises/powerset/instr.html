@@ -1,3 +1,9 @@
 <p>
-	Learn about powersets.
+	<i>powerset()</i> takes a set represented by a list <b>a</b>, and returns the set containing all the subsets of <b>a</b>.
+	<hr>
+    In <b>base case </b>, where the set is an empty set, the function returns the set containing the empty set. (Notice, however, this is <b>different</b> from the empty set.)
+    <hr>
+    In <b>recursive case </b>, where the set is a non-empty set, the function recursively calls itself and constructs the result by the following rules:<br>
+    All subsets of <b>a</b> that do not contain <b>a[0]</b> is the same as the power set of <b>a[1:]</b>.<br>
+    All subsets of <b>a</b> that contain <b>a[0]</b> can be constructed by adding <b>a[0]</b> to all the subsets in the power set of <b>a[1:]</b>.
 </p>
