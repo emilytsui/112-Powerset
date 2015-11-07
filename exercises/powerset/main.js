@@ -195,14 +195,13 @@ var main = function(ex) {
     var sep;
 
     /////// Animation Configuration
-    var animationDuration = 300;
-    var defaultAnimationDuration = 300;
+    var animationDuration = 100;
+    var defaultAnimationDuration = 100;
 
     var resetMode;
     //this function reset parameters and remove headers
     //this code is used in multiple function
     function clearUp(){
-        quizButton.disable(); //Can't do quiz until step through visualization
 
         /////// Animation Configuration
         var animationDuration = 300;
@@ -297,7 +296,7 @@ var main = function(ex) {
         var sizeOfArrow = 50;
         ex.graphics.ctx.beginPath();
         ex.graphics.ctx.lineWidth=5;
-        ex.graphics.ctx.strokeStyle = '#ff0000';
+        ex.graphics.ctx.strokeStyle = '#0000ff';
         ex.graphics.ctx.moveTo(arrowX+sizeOfArrow/2, arrowY);
         ex.graphics.ctx.lineTo(arrowX+sizeOfArrow, arrowY+sizeOfArrow/2);
         ex.graphics.ctx.stroke();
@@ -420,24 +419,24 @@ var main = function(ex) {
     state.visualList = generateList();
     init();
     function init(){
+
         //generate recursiveCall data
         nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
-                                        "Next", {keybinding: ["", 39]}).on("click", nextStep)
+                                        "Next", {color: "blue"}).on("click", nextStep)
 
         prevButton = ex.createButton(canvasWidth*(9/11)-60, canvasHeight*(9/10),
-                                         "Prev").on("click", prevStep)
+                                         "Prev", {color: "blue"}).on("click", prevStep)
         skipButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
-                                         "Skip").on("click", skipStep)
+                                         "Skip", {color: "orange"}).on("click", skipStep)
         quizButton = ex.createButton(canvasWidth*(8/9)-10, 10,
-                                         "Start Quiz").on("click", startQuiz)
-        quizButton.disable(); //Can't do quiz until step through visualization
+                                         "Start Quiz", {color: "blue"}).on("click", startQuiz)
 
 
 
         ///////// Code well containing powerset algorithm code
-        // codeWell1 = ex.createCode(10, canvasHeight-180,
-                                      // ex.data.code.display, ex.data.code);
-        // codeWell1.show();
+        codeWell1 = ex.createCode(10, canvasHeight-180,
+                                      ex.data.code.display, ex.data.code);
+        codeWell1.show();
         sep = Array(Math.round(canvasWidth/6)).join("*")
         //////// Separater at the center
         // var separater = ex.createHeader(0, canvasHeight*(10/16), sep,
@@ -470,6 +469,8 @@ var main = function(ex) {
     //perform appropriate action after nextButton is clicked
     function nextStep() {
         // console.log("next step")
+        // console.log(state.recursiveDepth)
+        if (state.recursiveDepth == -1) return;
 
         state.prevFns.push(function(){})
         if (state.recursiveDepth == state.listLength + 1) {
@@ -484,16 +485,6 @@ var main = function(ex) {
             state.recursiveDepth--;
         }
 
-        if (state.recursiveDepth == -1) {
-            //finish
-            quizButton.enable();
-            ////
-            reverseFn(function(){
-                quizButton.disable();
-            })
-            ////
-            return;
-        }
 
         if (!state.isReturning) {
             ////
@@ -596,7 +587,6 @@ var main = function(ex) {
         skipButton.disable();
         nextButton.disable();
         prevButton.disable();
-        quizButton.enable();
         return;
     }
 
@@ -622,7 +612,6 @@ var main = function(ex) {
                 var thisCall = state.recursiveCalls[depth];
                 thisCall.h1.remove();
                 thisCall.h2.remove();
-                thisCall.h3.remove();
             })
             ////
             var s1 = "powerset("+xToString(input)+")"
@@ -635,7 +624,9 @@ var main = function(ex) {
                                  transition:"fade"});
             var s3 = "We are now in the base case.\
              The funtion returns a value instead of calling itself."
-            var h3 =  ex.alert(s3,{color: "green", transition: "alert-long"});
+            if (!state.isQuizzing){
+                        var h3 =  ex.alert(s3,{color: "green", transition: "alert-long"});
+                        h3.position(canvasWidth*(1/4), canvasHeight/2)}
             h2.width(blockWidth);
             h1.width(blockWidth);
             thisCall.h1 = h1;
@@ -677,10 +668,11 @@ var main = function(ex) {
         thisCall.h3 = h3;
 
         var s4 = "We are now in the recursive case.\
-         The function recursively calls itself. with a new set of arguments.";
-        var h4 =  ex.alert(s4,{color: "green", transition: "alert-long"});
-        h4.position(canvasWidth*(1/4), canvasHeight/2)
-
+         The function recursively calls itself. with a new set of arguments.";      
+        if (!state.isQuizzing) {
+            var h4 =  ex.alert(s4,{color: "green", transition: "alert-long"});      
+            h4.position(canvasWidth*(1/4), canvasHeight/2)
+        }
     }
 
     //remove headers that representing function call
@@ -724,14 +716,14 @@ var main = function(ex) {
         else h6.width(canvasWidth);
         thisCall.h6 = h6; //So we can remove the element later on
 
-        var s7 = "The function returns with value" + s1;
-        var h7 =  ex.alert(s7,{color: "green", transition: "alert-long"});
-        h7.position(canvasWidth*(1/4), canvasHeight/2)
+        var s7 = "The function returns with value" + s1;  
+        if (!state.isQuizzing){      
+            var h7 =  ex.alert(s7,{color: "green", transition: "alert-long"});      
+            h7.position(canvasWidth*(1/4), canvasHeight/2)
+        }
 
         //Solve the layer conflict; draw the button after the header is created
-        if (state.recursiveDepth == 0 && !state.isQuizzing)
-            quizButton = ex.createButton(canvasWidth*(8/9)-10, 10,
-                                     "Start Quiz").on("click", startQuiz)
+
     }
 
     //display the result after merge(or not) the first element with the returned value
@@ -789,8 +781,10 @@ var main = function(ex) {
 
         var thisCall = state.recursiveCalls[state.recursiveDepth];
         var s= "This step corresponds to \n allSubsets += [subset]";
-        var al = ex.alert(s,{color: "green", transition: "alert-long"});
-        al.position(canvasWidth*(1/4), canvasHeight/2)
+        if (!state.isQuizzing){        
+            var al = ex.alert(s,{color: "green", transition: "alert-long"});        
+            al.position(canvasWidth*(1/4), canvasHeight/2)      
+        }
 
 
         function reviseH2() {
@@ -866,12 +860,13 @@ var main = function(ex) {
         thisCall.h5.hide();
         thisCall.h5.text(xToString(addE("_", returningList)));
         thisCall.h5.show();
-        var s= "This step corresponds to \n allSubsets += [[a[0]] + subset]";
-        var al = ex.alert(s,{color: "green", transition: "alert-long"});
-        al.position(canvasWidth*(1/4), canvasHeight/2)
-
+        var s= "This step corresponds to \n allSubsets += [[a[0]] + subset]";       
+        if (!state.isQuizzing){
+            var al = ex.alert(s,{color: "green", transition: "alert-long"});        
+            al.position(canvasWidth*(1/4), canvasHeight/2)
+        }
         //make animatio slower for this part
-        animationDuration = 300;
+        animationDuration = 100;
 
         function fly() {
             // console.log("fly")
@@ -885,9 +880,9 @@ var main = function(ex) {
                 animateMoveElement(flier, destX, initY, function(){});
                 fliers.push(flier);
             }
-            setTimeout(moveBack, 2000)
+            setTimeout(moveBack, 700)
         }
-        setTimeout(fly, 1000);
+        setTimeout(fly, 200);
 
         function moveBack() {
             //move h5 back to the place of h3; remove h5 and fliers, show H3.
@@ -943,13 +938,18 @@ var main = function(ex) {
     }
 
     function updateState(i, l){
+
+        console.log("update: i = "+xToString(i))
         if (l != undefined)
             quizState.quizList = l;
         if (i > quizState.quizNumber)
             quizState.quizNumber = i;
 
-        if (i >= 1 && i <= 9 && ex.data.questionNum[i].finalCorrect)
+        if (i >= 1 && i <= 9 && ex.data.question[i].finalCorrect)
             quizState.quizScore ++;
+        scoreBoard.text("Score: "+quizState.quizScore)
+        console.log("Score is " + xToString(quizState.quizScore))
+        if (i == 9) ex.setGrade(quizState.quizScore, "")
 
         ex.saveState(quizState);
         // console.log(quizState.quizScore);
@@ -959,29 +959,30 @@ var main = function(ex) {
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
-        // console.log("****************")
-        // console.log(state.recursiveDepth)
-        // console.log("compare")
-        // console.log(quizNumber)
-        // console.log( state.questionNum)
+        console.log("quizNumber:, questionNum: ")
+        console.log(quizNumber)
+        console.log(state.questionNum)
+
+        ex.chromeElements.submitButton.enable()
+
         if (quizNumber < state.questionNum){
             if (state.questionNum == 1 && ex.data.question[1].complete == false) {
                 if (questionObjects.input.text() == "") {
                     ex.alert("Please type your answer in the input box.",
                         {transition: "alert-long"});
                     return; // So they are forced to input an answer
-                } else {
-                    updateState(1);
                 }
                 questionObjects.input.disable();
                 ex.data.question[1].complete = true;
                 if (ex.data.question[1].answer == questionObjects.input.text().trim()) {
                     ex.data.question[1].finalCorrect = true;
+                    updateState(1);
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[1].finalCorrect = false;
+                    updateState(1);
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect. The correct answer is " +
                         ex.data.question[1].answer,
@@ -990,64 +991,70 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 2 && ex.data.question[2].complete == false) {
-                updateState(2)
                 questionObjects.dropdown.disable();
                 ex.data.question[2].complete = true;
                 if (ex.data.question[2].answer == ex.data.question[2].selected) {
-                    ex.data.question[2].finalCorrect = true;
+                    ex.data.question[2].finalCorrect = true;                
+                    updateState(2)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[2].finalCorrect = false;
+                    updateState(2)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 3 && ex.data.question[3].complete == false) {
-                updateState(3)
                 questionObjects.dropdown.disable();
                 ex.data.question[3].complete = true;
                 if (ex.data.question[3].answer == ex.data.question[3].selected) {
                     ex.data.question[3].finalCorrect = true;
+                    updateState(3)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[3].finalCorrect = false;
+                    updateState(3)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 4 && ex.data.question[4].complete == false) {
-                updateState(4)
+                
                 questionObjects.dropdown.disable();
                 ex.data.question[4].complete = true;
                 if (ex.data.question[4].answer == ex.data.question[4].selected) {
                     ex.data.question[4].finalCorrect = true;
+                    updateState(4)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[4].finalCorrect = false;
+                    updateState(4)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 5 && ex.data.question[5].complete == false) {
-                updateState(5)
+                
                 questionObjects.dropdown.disable();
                 ex.data.question[5].complete = true;
                 if (ex.data.question[5].answer == ex.data.question[5].selected) {
                     ex.data.question[5].finalCorrect = true;
+                    updateState(5)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[5].finalCorrect = false;
+                    updateState(5)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
@@ -1058,18 +1065,18 @@ var main = function(ex) {
                     ex.alert("Please type your answer in the input box.",
                         {transition: "alert-long"});
                     return; // So they are forced to input an answer
-                } else {
-                    updateState(6)
                 }
                 questionObjects.input.disable();
                 ex.data.question[6].complete = true;
                 if (ex.data.question[6].answer == questionObjects.input.text().trim()) {
                     ex.data.question[6].finalCorrect = true;
+                    updateState(6)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[6].finalCorrect = false;
+                    updateState(6)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect. The correct answer is " +
                         ex.data.question[6].answer,
@@ -1078,39 +1085,43 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 7 && ex.data.question[7].complete == false) {
-                updateState(7)
+                
                 questionObjects.dropdown.disable();
                 ex.data.question[7].complete = true;
                 if (ex.data.question[7].answer == ex.data.question[7].selected) {
                     ex.data.question[7].finalCorrect = true;
+                    updateState(7)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[7].finalCorrect = false;
+                    updateState(7)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 8 && ex.data.question[8].complete == false) {
-                updateState(8)
+                
                 questionObjects.dropdown.disable();
                 ex.data.question[8].complete = true;
                 if (ex.data.question[8].answer == ex.data.question[8].selected) {
                     ex.data.question[8].finalCorrect = true;
+                    updateState(8)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[8].finalCorrect = false;
+                    updateState(8)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 9 && ex.data.question[9].complete == false) {
-                updateState(9)
+                
                 questionObjects.dropdown.disable();
                 ex.data.question[9].complete = true;
                 if (quizNumber < 9) nextQButton.disable();
@@ -1119,11 +1130,13 @@ var main = function(ex) {
                 state.recursiveDepth--;
                 if (ex.data.question[9].answer == ex.data.question[9].selected) {
                     ex.data.question[9].finalCorrect = true;
+                    updateState(9)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
                 }
                 else {
                     ex.data.question[9].finalCorrect = false;
+                    updateState(9)
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
@@ -1162,7 +1175,6 @@ var main = function(ex) {
                 {
                     drawReturn();
                 } else if (quizNumber >= 8){
-                    //this bug costs me 1 hour. finaly solved.
                     drawReturn();
                 }
                 if (state.recursiveDepth != 0) state.isSubstituting = true;
@@ -1192,8 +1204,10 @@ var main = function(ex) {
         else if (state.questionNum == 6 && ex.data.question[6].complete == true) {
             if (ex.data.question[7].started == false){
                 ex.data.question[7].started = true;
-                if (quizNumber < 7) nextQButton.disable();
-                setTimeout(nextQuestion, animationDuration);
+                nextQButton.disable();
+                setTimeout(function(){
+                    nextQuestion()
+                }, animationDuration+50);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1204,9 +1218,11 @@ var main = function(ex) {
         else if (state.questionNum == 7 && ex.data.question[7].complete == true) {
             if (ex.data.question[8].started == false){
                 ex.data.question[8].started = true;
-                if (quizNumber < 8) nextQButton.disable();
+                nextQButton.disable();
                 clearCanvas();
-                setTimeout(nextQuestion, animationDuration);
+                setTimeout(function(){
+                    nextQuestion()
+                }, animationDuration+50);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1231,6 +1247,7 @@ var main = function(ex) {
     // Adds the necessary quiz elements
     function startQuiz() {
         // console.log(mode);
+        console.log("startQuiz")
         if (mode == "quiz-immediate") {
             ex.chromeElements.resetButton.disable();
             ex.chromeElements.newButton.disable();
@@ -1239,16 +1256,24 @@ var main = function(ex) {
 
         state.isQuizzing = true;
         quizList = generateList();
+        quizScore = 0;
         ex.data.state.quizList = quizList;
+
+        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore),
+                                {size: "medium"})
+        scoreBoard.innerWidth(40)
 
         //retrieving savedState
         console.log("savedState")
         console.log(ex.data.instance.state)
         if (ex.data.instance.state != null && ex.data.instance.state.quizList != undefined
-            && ex.data.instance.state.quizList.length != 0) {
+            && ex.data.instance.state.quizList.length != 0
+            && ex.data.instance.state.quizScore != undefined) {
             quizState = ex.data.instance.state
             quizList = quizState.quizList;
             quizNumber = quizState.quizNumber;
+            quizScore = quizState.quizScore;
+            scoreBoard.text("Score: "+xToString(quizScore))
             for (i = 0; i <= quizNumber; i++) {
                 ex.data.question[i].complete = true
             }
@@ -1274,8 +1299,9 @@ var main = function(ex) {
         quizButton.remove();
         // codeWell1.remove();
 
-        codeWell1 = ex.createCode(10, canvasHeight-180,
-                          ex.data.questionCode.display, ex.data.questionCode);
+        // codeWell1 = ex.createCode(10, canvasHeight-180,
+                          // ex.data.questionCode.display, ex.data.questionCode);
+
 
         // resetting values
         state.recursiveCalls = [];
@@ -1288,6 +1314,9 @@ var main = function(ex) {
         powersetMain(quizList);
         nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
                                       "Next").on("click", nextQuestion);
+        ex.chromeElements.submitButton.enable()
+        ex.chromeElements.submitButton.on("click", nextQuestion)
+        ex.chromeElements.resetButton.disable();
         nextQButton.show();
         drawQ1();
     }
@@ -1301,7 +1330,8 @@ var main = function(ex) {
         state.questionNum = 1;
         ex.data.question[1].question = "How many total calls to powerset will " +
                                  "there be as a result of calling powerset(" +
-                                 xToString(quizList) + ")?";
+                                 xToString(quizList) + "), including the first" +
+                                    "call?";
         ex.data.question[1].answer = quizList.length + 1;
 
         var xQuestion = canvasWidth/2;
@@ -1311,7 +1341,7 @@ var main = function(ex) {
 
         questionObjects.question = question;
 
-        var q1Input = ex.createInputText(xQuestion,yQuestion + 60,"Answer (e.g.: 0)");
+        var q1Input = ex.createInputText(xQuestion,yQuestion + 100,"Answer (e.g.: 0)");
         questionObjects["input"] = q1Input;
 
         //if have done this q1, freeze the input
