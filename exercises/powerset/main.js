@@ -1210,7 +1210,7 @@ var main = function(ex) {
                 nextQButton.disable();
                 setTimeout(function(){
                     nextQuestion()
-                }, animationDuration+50);
+                }, animationDuration+100);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1225,7 +1225,7 @@ var main = function(ex) {
                 clearCanvas();
                 setTimeout(function(){
                     nextQuestion()
-                }, animationDuration+50);
+                }, animationDuration+100);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1725,7 +1725,7 @@ var main = function(ex) {
 
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
-        drawArrow(xOrigin-5, yOrigin-5);
+        drawArrow(xOrigin-15, yOrigin-15);
 
     }
 
@@ -1810,7 +1810,7 @@ var main = function(ex) {
         questionObjects.question = question;
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
-        drawArrow(xOrigin-5, yOrigin-5);
+        drawArrow(xOrigin-15, yOrigin-15);
 
     }
 
