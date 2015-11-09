@@ -258,8 +258,12 @@ var main = function(ex) {
         }
     }
     function newPressed(){
-        if (mode == "practice")
-            ex.saveState({});
+        newHelper();
+        newHelper();
+        // hacky fix for state not resetting unless you press new twice
+    }
+    function newHelper() {
+        ex.saveState({});
         clearUp();
         init();
     }
@@ -950,9 +954,9 @@ var main = function(ex) {
 
         if (i >= 1 && i <= 9 && ex.data.question[i].finalCorrect)
             quizState.quizScore ++;
-        scoreBoard.text("Score: "+quizState.quizScore)
-        console.log("Score is " + xToString(quizState.quizScore))
-        if (i == 9) ex.setGrade(quizState.quizScore, "")
+        scoreBoard.text("Score: "+quizState.quizScore);
+        console.log("Score is " + xToString(quizState.quizScore));
+        if (i == 9) ex.setGrade(quizState.quizScore/9.0, "");
 
         ex.saveState(quizState);
         // console.log(quizState.quizScore);
