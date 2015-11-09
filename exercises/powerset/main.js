@@ -170,7 +170,7 @@ var main = function(ex) {
     ///////////////button configuration
     ex.chromeElements.undoButton.disable();
     ex.chromeElements.redoButton.disable();
-    ex.chromeElements.newButton.on("click", resetPressed);
+    ex.chromeElements.newButton.on("click", newPressed);
     ex.chromeElements.resetButton.on("click", resetPressed);
     ex.chromeElements.submitButton.disable();
 
@@ -258,6 +258,8 @@ var main = function(ex) {
         }
     }
     function newPressed(){
+        if (mode == "practice")
+            ex.saveState({});
         clearUp();
         init();
     }
@@ -669,9 +671,9 @@ var main = function(ex) {
         thisCall.h3 = h3;
 
         var s4 = "We are now in the recursive case.\
-         The function recursively calls itself. with a new set of arguments.";      
+         The function recursively calls itself. with a new set of arguments.";
         if (!state.isQuizzing) {
-            var h4 =  ex.alert(s4,{color: "green", transition: "alert-long"});      
+            var h4 =  ex.alert(s4,{color: "green", transition: "alert-long"});
             h4.position(canvasWidth*(1/4), canvasHeight/2)
         }
     }
@@ -717,9 +719,9 @@ var main = function(ex) {
         else h6.width(canvasWidth);
         thisCall.h6 = h6; //So we can remove the element later on
 
-        var s7 = "The function returns with value" + s1;  
-        if (!state.isQuizzing){      
-            var h7 =  ex.alert(s7,{color: "green", transition: "alert-long"});      
+        var s7 = "The function returns with value" + s1;
+        if (!state.isQuizzing){
+            var h7 =  ex.alert(s7,{color: "green", transition: "alert-long"});
             h7.position(canvasWidth*(1/4), canvasHeight/2)
         }
 
@@ -782,9 +784,9 @@ var main = function(ex) {
 
         var thisCall = state.recursiveCalls[state.recursiveDepth];
         var s= "This step corresponds to \n allSubsets += [subset]";
-        if (!state.isQuizzing){        
-            var al = ex.alert(s,{color: "green", transition: "alert-long"});        
-            al.position(canvasWidth*(1/4), canvasHeight/2)      
+        if (!state.isQuizzing){
+            var al = ex.alert(s,{color: "green", transition: "alert-long"});
+            al.position(canvasWidth*(1/4), canvasHeight/2)
         }
 
 
@@ -861,9 +863,9 @@ var main = function(ex) {
         thisCall.h5.hide();
         thisCall.h5.text(xToString(addE("_", returningList)));
         thisCall.h5.show();
-        var s= "This step corresponds to \n allSubsets += [[a[0]] + subset]";       
+        var s= "This step corresponds to \n allSubsets += [[a[0]] + subset]";
         if (!state.isQuizzing){
-            var al = ex.alert(s,{color: "green", transition: "alert-long"});        
+            var al = ex.alert(s,{color: "green", transition: "alert-long"});
             al.position(canvasWidth*(1/4), canvasHeight/2)
         }
         //make animatio slower for this part
@@ -995,7 +997,7 @@ var main = function(ex) {
                 questionObjects.dropdown.disable();
                 ex.data.question[2].complete = true;
                 if (ex.data.question[2].answer == ex.data.question[2].selected) {
-                    ex.data.question[2].finalCorrect = true;                
+                    ex.data.question[2].finalCorrect = true;
                     updateState(2)
                     if (mode == "quiz-delay") return;
                     ex.alert("Correct!", {color: "green", transition: "alert-long"});
@@ -1026,7 +1028,7 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 4 && ex.data.question[4].complete == false) {
-                
+
                 questionObjects.dropdown.disable();
                 ex.data.question[4].complete = true;
                 if (ex.data.question[4].answer == ex.data.question[4].selected) {
@@ -1044,7 +1046,7 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 5 && ex.data.question[5].complete == false) {
-                
+
                 questionObjects.dropdown.disable();
                 ex.data.question[5].complete = true;
                 if (ex.data.question[5].answer == ex.data.question[5].selected) {
@@ -1086,7 +1088,7 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 7 && ex.data.question[7].complete == false) {
-                
+
                 questionObjects.dropdown.disable();
                 ex.data.question[7].complete = true;
                 if (ex.data.question[7].answer == ex.data.question[7].selected) {
@@ -1104,7 +1106,7 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 8 && ex.data.question[8].complete == false) {
-                
+
                 questionObjects.dropdown.disable();
                 ex.data.question[8].complete = true;
                 if (ex.data.question[8].answer == ex.data.question[8].selected) {
@@ -1122,7 +1124,7 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 9 && ex.data.question[9].complete == false) {
-                
+
                 questionObjects.dropdown.disable();
                 ex.data.question[9].complete = true;
                 if (quizNumber < 9) nextQButton.disable();
