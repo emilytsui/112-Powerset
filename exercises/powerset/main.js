@@ -1212,8 +1212,8 @@ var main = function(ex) {
         else if (state.questionNum == 5 && ex.data.question[5].complete == true) {
             //q5Header.show();
             if (q6OneStep){
-                nextQuestion();
                 q6OneStep = false;
+                nextQuestion();
             }
             drawQ6();
             updateState();
@@ -1274,7 +1274,7 @@ var main = function(ex) {
 
         if (i >= 1 && i <= 9 && ex.data.question[i].finalCorrect)
             quizState.quizScore ++;
-        scoreBoard.text("Score: "+quizState.quizScore);
+        scoreBoard.text("Score: "+quizState.quizScore+"/9");
         if (i == 9) ex.setGrade(quizState.quizScore/9.0, "");
         quizState.exdata = ex.data;
         quizState.questionObjects = questionObjects;
@@ -1321,7 +1321,7 @@ var main = function(ex) {
         quizScore = quizState.quizScore;
         quizNumber = quizState.quizNumber;
 
-        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore),
+        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore)+"/9",
                                 {size: "medium"})
         scoreBoard.innerWidth(40)
 
@@ -1340,6 +1340,7 @@ var main = function(ex) {
         //random but important stuff
         state.isSubstituting = false;
         correctStep = true;
+        q6OneStep = true;
 
         console.log("depth: "+serverState.depth)
         var depth = serverState.depth;
@@ -1391,7 +1392,7 @@ var main = function(ex) {
         quizScore = 0;
         ex.data.state.quizList = quizList;
 
-        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore),
+        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore)+"/9",
                                 {size: "medium"})
         scoreBoard.innerWidth(40)
 
@@ -1851,7 +1852,7 @@ var main = function(ex) {
 
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
-        drawArrow(xOrigin-15, yOrigin-15);
+        drawArrow(xOrigin-15, yOrigin-5);
 
     }
 
@@ -1937,7 +1938,7 @@ var main = function(ex) {
         addQuestionObjects(question, "question", "header", null)
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
-        drawArrow(xOrigin-15, yOrigin-15);
+        drawArrow(xOrigin-15, yOrigin-5);
 
     }
 
