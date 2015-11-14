@@ -247,8 +247,9 @@ var main = function(ex) {
         if (state.isQuizzing) {
             state.isQuizzing = false;
             state.questionNum = 0;
-            for (var key in ex.data.questionObjects) {
-                ex.data.questionObjects[key].remove();
+            for (var key in questionObjects) {
+                questionObjects[key].remove();
+                delete questionObjects[key];
             }
             resetQuestions();
             codeWell1.hide();
@@ -422,107 +423,26 @@ var main = function(ex) {
         recurseMove(0);
     }
 
-    state.visualList = generateList();
+    var serverState = ex.data.instance.state;
+    if (serverState != null) {
+        if (serverState.exdata.state.isQuizzing) {
+            //quizing
+            console.log("revert to quiz")
+            ex.data = serverState.exdata;
+            state = ex.data.state;
+            quizState = serverState;
+            questionObjects = serverState.questionObjects;
+            revertQuiz();
+        } else {
+            //not quizing
 
-
-    if (ex.data.instance.state != null) {
-        //needs to be there to prevent some bugs
-        nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
-                                        "Next", {color: "blue"}).on("click", nextStep)
-        nextButton.remove();
-        var serverState = ex.data.instance.state;
-        quizState = serverState;
-        var qn = serverState.quizNumber;
-        startQuiz();
-        animationDuration = 0;
-        nextQButton.disable();
-        for (var i = 0; i < qn; i++) {
-            nextQuestion();
         }
-        setTimeout(function(){
-            animationDuration = defaultAnimationDuration;
-            nextQButton.enable();
-        }, 100)
-        console.log(serverState);
-    } else {
-        init();
-    }
+    } else {init()}
 
+    // init()
 
-    // //interface is stored. revert back to the previous interface
-    // if (ex.data.instance.state != null && ex.data.instance.state.data != undefined) {
-    //     console.log("Restoring state")
-    //     console.log(ex.data.instance.state)
-    //     var serverState = ex.data.instance.state;
-    //     var savedData = serverState.data;
-    //     ex.data = savedData;
-    //     state = ex.data.state;
-    //     console.log(state.recursiveCalls)
-    //     var drawQfn = [drawQ1, drawQ2, drawQ3, drawQ4, drawQ5, drawQ6, drawQ7, drawQ8, drawQ9]
-
-    //     codeWell1 = ex.createCode(10, canvasHeight-180,
-    //                           ex.data.code.display, ex.data.code);
-    //     codeWell1.show();
-    //     if (savedData.state.isQuizzing) {
-
-    //         quizState = serverState;
-    //         quizList = serverState.quizList;
-    //         quizNumber = serverState.quizNumber;
-    //         quizScore = serverState.quizScore;
-    //         console.log("number scores")
-    //         console.log(quizNumber)
-    //         console.log(quizScore)
-    //         for (i = 0; i <= quizNumber; i++) {
-    //             ex.data.question[i].complete = true
-    //         }
-
-    //         scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(serverState.quizScore),
-    //                     {size: "medium"})
-    //         scoreBoard.text("Score: "+xToString(quizScore))
-    //         scoreBoard.innerWidth(40)
-
-
-    //         //get demo back
-
-    //         nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
-    //                           "Next").on("click", nextQuestion);
-    //         ex.chromeElements.submitButton.enable()
-    //         ex.chromeElements.submitButton.on("click", nextQuestion)
-    //         ex.chromeElements.resetButton.disable();
-    //         nextQButton.show();
-    //         var qn = savedData.state.questionNum
-    //         var savedData = savedData.state
-    //         if (qn == 1) drawQ1()
-    //         else if (qn <= 5) {
-    //             for (var i = 0; i < qn-1; i++) {
-    //                 savedData.recursiveCalls[i].h1.show();
-    //                 savedData.recursiveCalls[i].h2.show();
-    //                 savedData.recursiveCalls[i].h3.show();
-    //             }
-    //             drawQfn[qn]()
-    //         } else {
-    //             var depth = 8 - qn;
-    //             for (var i = depth; i < 4; i++) {
-    //                 savedData.recursiveCalls[i].h1.show();
-    //                 savedData.recursiveCalls[i].h2.show();
-    //                 savedData.recursiveCalls[i].h3.show();
-    //                 savedData.recursiveCalls[i].h4.show();
-    //                 savedData.recursiveCalls[i].h5.show();
-    //             }
-    //             for (var i = 0; i < depth; i++) {
-    //                 savedData.recursiveCalls[i].h1.show();
-    //                 savedData.recursiveCalls[i].h2.show();
-    //                 savedData.recursiveCalls[i].h3.show();
-    //             }
-    //             drawQfn[qn]()
-    //         }
-    //     } else {
-
-    //     }
-    // } else {
-    //     init();
-    // }
     function init(){
+        state.visualList = generateList();
 
         //generate recursiveCall data
         nextButton = ex.createButton(canvasWidth*(9/11), canvasHeight*(9/10),
@@ -971,6 +891,7 @@ var main = function(ex) {
             al.position(canvasWidth*(1/4), canvasHeight/2)
         }
         //make animatio slower for this part
+        animationDuration = 100;
 
         function fly() {
             // console.log("fly")
@@ -995,6 +916,7 @@ var main = function(ex) {
             animateMoveElement(thisCall.h5, thisCall.h5.box().x - xMoveBack, initY, function(){
                 integrateH3();
                 enableNext();
+                animationDuration = defaultAnimationDuration;
             });
             for (var i = 0; i < fliers.length; i++) {
                 animateMoveElement(fliers[i], fliers[i].box().x - xMoveBack, initY, function(){});
@@ -1030,51 +952,26 @@ var main = function(ex) {
 
 
 
-    var quizState = {
-        "quizList": [],
-        "quizNumber": 0, // quiz that have taken
-        "quizScore": 0,
-        "data": {}
-    }
-
-    function updateState(i, l){
-
-        console.log("update: i = "+xToString(i))
-        if (l != undefined)
-            quizState.quizList = l;
-        if (i > quizState.quizNumber)
-            quizState.quizNumber = i;
-
-        if (i >= 1 && i <= 9 && ex.data.question[i].finalCorrect)
-            quizState.quizScore ++;
-        scoreBoard.text("Score: "+quizState.quizScore);
-
-        if (i == 9) ex.setGrade(quizState.quizScore/9.0, "");
-
-        ex.saveState(quizState);
-        // console.log(quizState.quizScore);
-    }
-
 
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
         console.log("quizNumber:, questionNum: ")
-        console.log(quizNumber) 
+        console.log(quizNumber)
         console.log(state.questionNum)
 
         ex.chromeElements.submitButton.enable()
 
         if (quizNumber < state.questionNum){
             if (state.questionNum == 1 && ex.data.question[1].complete == false) {
-                if (ex.data.questionObjects.input.text() == "") {
+                if (questionObjects.input.element.text() == "") {
                     ex.alert("Please type your answer in the input box.",
                         {transition: "alert-long"});
                     return; // So they are forced to input an answer
                 }
-                ex.data.questionObjects.input.disable();
+                questionObjects.input.element.disable();
                 ex.data.question[1].complete = true;
-                if (ex.data.question[1].answer == ex.data.questionObjects.input.text().trim()) {
+                if (ex.data.question[1].answer == questionObjects.input.element.text().trim()) {
                     ex.data.question[1].finalCorrect = true;
                     updateState(1);
                     if (mode == "quiz-delay") return;
@@ -1091,7 +988,7 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 2 && ex.data.question[2].complete == false) {
-                ex.data.questionObjects.dropdown.disable();
+                questionObjects.dropdown.element.disable();
                 ex.data.question[2].complete = true;
                 if (ex.data.question[2].answer == ex.data.question[2].selected) {
                     ex.data.question[2].finalCorrect = true;
@@ -1108,7 +1005,7 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 3 && ex.data.question[3].complete == false) {
-                ex.data.questionObjects.dropdown.disable();
+                questionObjects.dropdown.element.disable();
                 ex.data.question[3].complete = true;
                 if (ex.data.question[3].answer == ex.data.question[3].selected) {
                     ex.data.question[3].finalCorrect = true;
@@ -1126,7 +1023,7 @@ var main = function(ex) {
             }
             else if (state.questionNum == 4 && ex.data.question[4].complete == false) {
 
-                ex.data.questionObjects.dropdown.disable();
+                questionObjects.dropdown.element.disable();
                 ex.data.question[4].complete = true;
                 if (ex.data.question[4].answer == ex.data.question[4].selected) {
                     ex.data.question[4].finalCorrect = true;
@@ -1144,7 +1041,7 @@ var main = function(ex) {
             }
             else if (state.questionNum == 5 && ex.data.question[5].complete == false) {
 
-                ex.data.questionObjects.dropdown.disable();
+                questionObjects.dropdown.element.disable();
                 ex.data.question[5].complete = true;
                 if (ex.data.question[5].answer == ex.data.question[5].selected) {
                     ex.data.question[5].finalCorrect = true;
@@ -1161,14 +1058,14 @@ var main = function(ex) {
                 return; // so they can reflect on answer before moving on to next step
             }
             else if (state.questionNum == 6 && ex.data.question[6].complete == false) {
-                if (ex.data.questionObjects.input.text() == "") {
+                if (questionObjects.input.element.text() == "") {
                     ex.alert("Please type your answer in the input box.",
                         {transition: "alert-long"});
                     return; // So they are forced to input an answer
                 }
-                ex.data.questionObjects.input.disable();
+                questionObjects.input.element.disable();
                 ex.data.question[6].complete = true;
-                if (ex.data.question[6].answer == ex.data.questionObjects.input.text().trim()) {
+                if (ex.data.question[6].answer == questionObjects.input.element.text().trim()) {
                     ex.data.question[6].finalCorrect = true;
                     updateState(6)
                     if (mode == "quiz-delay") return;
@@ -1186,7 +1083,7 @@ var main = function(ex) {
             }
             else if (state.questionNum == 7 && ex.data.question[7].complete == false) {
 
-                ex.data.questionObjects.dropdown.disable();
+                questionObjects.dropdown.element.disable();
                 ex.data.question[7].complete = true;
                 if (ex.data.question[7].answer == ex.data.question[7].selected) {
                     ex.data.question[7].finalCorrect = true;
@@ -1204,7 +1101,7 @@ var main = function(ex) {
             }
             else if (state.questionNum == 8 && ex.data.question[8].complete == false) {
 
-                ex.data.questionObjects.dropdown.disable();
+                questionObjects.dropdown.element.disable();
                 ex.data.question[8].complete = true;
                 if (ex.data.question[8].answer == ex.data.question[8].selected) {
                     ex.data.question[8].finalCorrect = true;
@@ -1222,7 +1119,7 @@ var main = function(ex) {
             }
             else if (state.questionNum == 9 && ex.data.question[9].complete == false) {
 
-                ex.data.questionObjects.dropdown.disable();
+                questionObjects.dropdown.element.disable();
                 ex.data.question[9].complete = true;
                 if (quizNumber < 9) nextQButton.disable();
                 state.recursiveDepth++;
@@ -1240,9 +1137,7 @@ var main = function(ex) {
                     if (mode == "quiz-delay") return;
                     ex.alert("Incorrect", {color: "red", transition: "alert-long"});
                 }
-                for (var key in ex.data.questionObjects) {
-                    ex.data.questionObjects[key].remove();
-                }
+                clearQuestionObjects();
                 return; // so they can reflect on answer before moving on to next step
             }
         }
@@ -1307,7 +1202,7 @@ var main = function(ex) {
                 nextQButton.disable();
                 setTimeout(function(){
                     nextQuestion()
-                }, animationDuration+50);
+                }, animationDuration+100);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1322,7 +1217,7 @@ var main = function(ex) {
                 clearCanvas();
                 setTimeout(function(){
                     nextQuestion()
-                }, animationDuration+50);
+                }, animationDuration+100);
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
@@ -1337,33 +1232,101 @@ var main = function(ex) {
 
     }
 
-
-
-
-
-
-
-
-
-
-
     var nextQButton;
     var quizList;
     var q5Header;
     var correctStep = false;
     
 
+
+
+
+
+
+    function updateState(i, l){
+
+        console.log("update: i = "+xToString(i))
+        if (l != undefined)
+            quizState.quizList = l;
+        if (i > quizState.quizNumber)
+            quizState.quizNumber = i;
+
+        if (i >= 1 && i <= 9 && ex.data.question[i].finalCorrect)
+            quizState.quizScore ++;
+        scoreBoard.text("Score: "+quizState.quizScore);
+        console.log("Score is " + xToString(quizState.quizScore));
+        if (i == 9) ex.setGrade(quizState.quizScore/9.0, "");
+        quizState.exdata = ex.data;
+        quizState.questionObjects = questionObjects;
+
+        ex.saveState(quizState);
+        // console.log(quizState.quizScore);
+    }
+
+    function addQuestionObjects(element, name, type, content) {
+        questionObjects[name] = {"element": element,
+                                  "name":name,
+                                  "position":element.position(),
+                                  "type":type,
+                                  "text":element.text(),
+                                  "content":content
+                                }
+    }
+
+    function clearQuestionObjects(){
+        for (var property in questionObjects) {
+            if (questionObjects.hasOwnProperty(property)){
+                questionObjects[property].element.remove();
+                delete questionObjects[property];
+            }
+        } 
+    }
+
+
+    function revertQuiz() {
+        quizList = quizState.quizList;
+        quizScore = quizState.quizScore;
+        quizNumber = quizState.quizNumber;
+
+        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore),
+                                {size: "medium"})
+        scoreBoard.innerWidth(40)
+
+
+        var drawFn = [drawQ1, drawQ2, drawQ3, drawQ4, drawQ5, drawQ6, drawQ7, drawQ8, drawQ9]
+
+        (drawFn[state.questionNum])();
+
+        for (i = 0; i <= quizNumber; i++) {
+            ex.data.question[i].complete = true
+        }
+
+        powersetMain(quizList);
+        nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
+                                      "Next").on("click", nextQuestion);
+        ex.chromeElements.submitButton.enable()
+        ex.chromeElements.submitButton.on("click", nextQuestion)
+        ex.chromeElements.resetButton.disable();
+        nextQButton.show();
+    }
+
     // Removes the visualization elements
     // Adds the necessary quiz elements
     function startQuiz() {
-
         // console.log(mode);
-        ex.data.questionObjects = {};
         console.log("startQuiz")
         if (mode == "quiz-immediate") {
             ex.chromeElements.resetButton.disable();
             ex.chromeElements.newButton.disable();
         }
+        quizState = {
+        "quizList": [],
+        "quizNumber": 0, // quiz that have taken
+        "quizScore": 0,
+        "exdata": {},
+        "questionObjects": {}
+        }
+        questionObjects = {};
 
 
         state.isQuizzing = true;
@@ -1371,27 +1334,13 @@ var main = function(ex) {
         quizScore = 0;
         ex.data.state.quizList = quizList;
 
-        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(0),
+        scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore),
                                 {size: "medium"})
         scoreBoard.innerWidth(40)
 
-        //retrieving savedState
-        console.log(ex.data.instance.state)
-        if (ex.data.instance.state != null && ex.data.instance.state.quizList != undefined
-            && ex.data.instance.state.quizList.length != 0
-            && ex.data.instance.state.quizScore != undefined) {
-            quizState = ex.data.instance.state
-            quizList = quizState.quizList;
-            quizNumber = quizState.quizNumber;
-            quizScore = quizState.quizScore;
-            scoreBoard.text("Score: "+xToString(quizScore))
-            for (i = 0; i <= quizNumber; i++) {
-                ex.data.question[i].complete = true
-            }
-        } else {
-            quizNumber = 0;
-            updateState(0, quizList)
-        }
+
+        quizNumber = 0;
+        updateState(0, quizList)
 
 
         // Removing all the remaining headers on the screen
@@ -1404,15 +1353,10 @@ var main = function(ex) {
             if (obj.h5 != undefined) obj.h5.remove();
             if (obj.h6 != undefined) obj.h6.remove();
         }
-        if (prevButton != undefined) prevButton.remove();
-        if (skipButton != undefined) skipButton.remove();
-        if (nextButton != undefined) nextButton.remove();
-        if (quizButton != undefined) quizButton.remove();
-        // codeWell1.remove();
-
-        // codeWell1 = ex.createCode(10, canvasHeight-180,
-                          // ex.data.questionCode.display, ex.data.questionCode);
-
+        prevButton.remove();
+        skipButton.remove();
+        nextButton.remove();
+        quizButton.remove();
 
         // resetting values
         state.recursiveCalls = [];
@@ -1443,17 +1387,20 @@ var main = function(ex) {
                                  "there be as a result of calling powerset(" +
                                  xToString(quizList) + "), including the first" +
                                     "call?";
-        ex.data.question[1].answer = 4;
+        ex.data.question[1].answer = quizList.length + 1;
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[1].question, {size: "large"});
 
-        ex.data.questionObjects.question = question;
+        
+        addQuestionObjects(question, "question", "header", null);
 
         var q1Input = ex.createInputText(xQuestion,yQuestion + 100,"Answer (e.g.: 0)");
-        ex.data.questionObjects["input"] = q1Input;
+
+        addQuestionObjects(q1Input, "input", "inputtext", null)
+
 
         //if have done this q1, freeze the input
         if (quizState.quizNumber >= 1) q1Input.disable()
@@ -1487,9 +1434,8 @@ var main = function(ex) {
     // Draws question 2 of quiz mode
     function drawQ2() {
 
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
+
         console.log("drawQ2")
         state.questionNum = 2;
 
@@ -1518,7 +1464,8 @@ var main = function(ex) {
         var q2Dropdown = ex.createDropdown(xOrigin,yOrigin,"Select One", {
             elements: elements
         });
-        ex.data.questionObjects["dropdown"] = q2Dropdown;
+
+        addQuestionObjects(q2Dropdown, "dropdown", "dropdown", elements)
 
         //if have done
         if (quizNumber >= 2) q2Dropdown.disable()
@@ -1528,7 +1475,7 @@ var main = function(ex) {
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[2].question, {size: "large"});
 
-        ex.data.questionObjects.question = question;
+        addQuestionObjects(question, "question", "header", null)        
 
     }
 
@@ -1559,9 +1506,8 @@ var main = function(ex) {
 
     // Draw Question 3 of Quiz mode
     function drawQ3 () {
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
+
         state.questionNum = 3;
         if (quizNumber < 3) nextQButton.disable();
         genQ3Answers(quizList, 4);
@@ -1589,7 +1535,8 @@ var main = function(ex) {
         var q3Dropdown = ex.createDropdown(xOrigin-45 ,yOrigin-35,"Choose the answer", {
             elements: elements
         });//The current coordinate heree is hardcoded. May be bugggy.
-        ex.data.questionObjects.dropdown = q3Dropdown;
+        
+        addQuestionObjects(q3Dropdown, "dropdown", "dropdown", elements)
 
         if (quizNumber >= 3) q3Dropdown.disable()
 
@@ -1598,7 +1545,8 @@ var main = function(ex) {
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[3].question, {size: "large"});
 
-        ex.data.questionObjects.question = question;
+        
+        addQuestionObjects(question, "question", "header", null);
 
     }
 
@@ -1631,9 +1579,8 @@ var main = function(ex) {
 
    // Draw Question 4 of Quiz mode
     function drawQ4 () {
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
+
         state.questionNum = 4;
         if (quizNumber < 4) nextQButton.disable();
         genQ4Answers(quizList, 4);
@@ -1659,7 +1606,9 @@ var main = function(ex) {
         var q4Dropdown = ex.createDropdown(xOrigin,yOrigin,"Choose the answer", {
             elements: elements
         });
-        ex.data.questionObjects.dropdown = q4Dropdown;
+        
+
+        addQuestionObjects(q4Dropdown, "dropdown", "dropdown", elements)
         if (quizNumber >= 4) q4Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
@@ -1667,7 +1616,8 @@ var main = function(ex) {
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[4].question, {size: "large"});
 
-        ex.data.questionObjects.question = question;
+        
+        addQuestionObjects(question, "question", "header", null);
 
     }
 
@@ -1705,9 +1655,8 @@ var main = function(ex) {
 
     // Draw Question 5 of Quiz mode
     function drawQ5 () {
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
+
         state.questionNum = 5;
 
         if (quizNumber < 5) nextQButton.disable();
@@ -1733,22 +1682,22 @@ var main = function(ex) {
         var q5Dropdown = ex.createDropdown(xOrigin, yOrigin, "Select", {
             elements: elements
         });
-        ex.data.questionObjects.dropdown = q5Dropdown;
+        
+        addQuestionObjects(q5Dropdown, "dropdown", "dropdown", elements)
         if (quizNumber >= 5) q5Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[5].question, {size: "large"});
-        ex.data.questionObjects.question = question;
+        
+        addQuestionObjects(question, "question", "header", null);
 
     }
 
     // Draws Question 6 of the quiz
     function drawQ6() {
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
         // Because you don't do question 6 immediately after question 5;
         // there is one step in between the two questions
         if (!correctStep) {
@@ -1769,11 +1718,13 @@ var main = function(ex) {
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[6].question, {size: "large"});
 
-        ex.data.questionObjects.question = question;
+        
+        addQuestionObjects(question, "question", "header", null);
 
         var q6Input = ex.createInputText(xQuestion,yQuestion + 60,"Answer (e.g.: 0)");
         if (quizNumber >= 6) q6Input.disable()
-        ex.data.questionObjects.input = q6Input;
+        
+        addQuestionObjects(q6Input, "input", "inputtext", null)
 
     }
 
@@ -1797,9 +1748,7 @@ var main = function(ex) {
 
     // Draws Question 7 of the quiz
     function drawQ7 () {
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
         state.questionNum = 7;
 
         if (quizNumber < 7) nextQButton.disable();
@@ -1823,13 +1772,15 @@ var main = function(ex) {
         var q7Dropdown = ex.createDropdown(xQuestion, yQuestion+ 2 * lineHeight, "Select the answer", {
             elements: elements
         });
-        ex.data.questionObjects.dropdown = q7Dropdown;
+        
+        addQuestionObjects(q7Dropdown, "dropdown", "dropdown", elements)
         if (quizNumber >= 7) q7Dropdown.disable()
 
 
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[7].question, {size: "large"});
-        ex.data.questionObjects.question = question;
+        
+        addQuestionObjects(question, "question", "header", null)
 
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
@@ -1882,9 +1833,8 @@ var main = function(ex) {
 
     // Draws Question 8 of the quiz
     function drawQ8 () {
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
+
         state.questionNum = 8;
 
         if (quizNumber < 8) nextQButton.disable();
@@ -1908,14 +1858,16 @@ var main = function(ex) {
         var q8Dropdown = ex.createDropdown(xQuestion, yQuestion+ 2 * lineHeight, "Select the answer", {
             elements: elements
         });
-        ex.data.questionObjects.dropdown = q8Dropdown;
+        
+        addQuestionObjects(q8Dropdown, "dropdown", "dropdown", elements)
         if (quizNumber >= 8) q8Dropdown.disable()
 
 
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[8].question, {size: "large"});
 
-        ex.data.questionObjects.question = question;
+        
+        addQuestionObjects(question, "question", "header", null)
         var xOrigin = sideMargin + blockWidth * (state.recursiveDepth+0.5);
         var yOrigin = topMargin + ((state.recursiveDepth) * 3 + 1.7)* lineHeight;
         drawArrow(xOrigin-15, yOrigin-15);
@@ -1951,9 +1903,7 @@ var main = function(ex) {
 
     // Draws Question 9 of the quiz
     function drawQ9 () {
-        for (var key in ex.data.questionObjects) {
-            ex.data.questionObjects[key].remove();
-        }
+        clearQuestionObjects();
         state.questionNum = 9;
 
         if (quizNumber < 9) nextQButton.disable();
@@ -1981,12 +1931,15 @@ var main = function(ex) {
         var q9Dropdown = ex.createDropdown(xOrigin, yOrigin, "Select the resulting list from initial call", {
             elements: elements
         });
-        ex.data.questionObjects.dropdown = q9Dropdown;
+        
+        addQuestionObjects(q9Dropdown, "dropdown", "dropdown", elements)
         if (quizNumber >= 9) q9Dropdown.disable()
 
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[9].question, {size: "large"});
-        ex.data.questionObjects.question = question;
+        
+
+        addQuestionObjects(question, "question", "header", null)
 
     }
 };
