@@ -502,7 +502,10 @@ var main = function(ex) {
     function nextStep() {
         // console.log("next step")
         // console.log(state.recursiveDepth)
-        if (state.recursiveDepth == -1) return;
+        if (state.recursiveDepth == -1 && !state.isQuizzing) {
+            ex.alert("Finished, begin quiz by clicking StartQuiz button", {color: "green", transition: "alert-long"});
+            return;
+        }
 
         //for quizzing
         if (state.isQuizzing) {
@@ -624,6 +627,7 @@ var main = function(ex) {
         skipButton.disable();
         nextButton.disable();
         prevButton.disable();
+        ex.alert("Finished, begin quiz by clicking StartQuiz button", {color: "green", transition: "alert-long"});
         return;
     }
 
@@ -765,7 +769,6 @@ var main = function(ex) {
         }
 
         //Solve the layer conflict; draw the button after the header is created
-
     }
 
     //display the result after merge(or not) the first element with the returned value
@@ -966,7 +969,7 @@ var main = function(ex) {
     }
 
 
-
+    q6OneStep = true;
 
 
 
@@ -974,6 +977,7 @@ var main = function(ex) {
     // step is an actual question or not)
     function nextQuestion() {
         console.log(state.questionNum)
+        nextQButton.disable();
 
         ex.chromeElements.submitButton.enable()
 
@@ -999,7 +1003,7 @@ var main = function(ex) {
                     ex.data.question[1].answer,
                     {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 2 && ex.data.question[2].complete == false) {
             questionObjects.dropdown.element.disable();
@@ -1016,7 +1020,7 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 3 && ex.data.question[3].complete == false) {
             questionObjects.dropdown.element.disable();
@@ -1033,7 +1037,7 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 4 && ex.data.question[4].complete == false) {
 
@@ -1051,7 +1055,7 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 5 && ex.data.question[5].complete == false) {
 
@@ -1069,7 +1073,8 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 6 && ex.data.question[6].complete == false) {
             if (questionObjects.input.element.text() == "") {
@@ -1093,7 +1098,7 @@ var main = function(ex) {
                     ex.data.question[6].answer,
                     {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 7 && ex.data.question[7].complete == false) {
 
@@ -1111,7 +1116,7 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 8 && ex.data.question[8].complete == false) {
 
@@ -1129,7 +1134,7 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
         else if (state.questionNum == 9 && ex.data.question[9].complete == false) {
 
@@ -1150,8 +1155,9 @@ var main = function(ex) {
                 if (mode == "quiz-delay") return;
                 ex.alert("Incorrect", {color: "red", transition: "alert-long"});
             }
+            
             clearQuestionObjects();
-            return; // so they can reflect on answer before moving on to next step
+            // return; // so they can reflect on answer before moving on to next step
         }
 
 
@@ -1191,12 +1197,12 @@ var main = function(ex) {
         // Moves on to the next question
         if (state.questionNum == 1 && ex.data.question[1].complete == true){
             drawQ2();
-            updateState();
+            updateState(1);
             console.log(state.recursiveDepth)
         }
         else if (state.questionNum == 2 && ex.data.question[2].complete == true){
             drawQ3();
-            updateState();
+            updateState(2);
             console.log(state.recursiveDepth)
         }
         else if (state.questionNum == 3 && ex.data.question[3].complete == true) {
@@ -1204,13 +1210,13 @@ var main = function(ex) {
             if (state.recursiveCalls[state.recursiveDepth-2].h3 !== undefined)
                 state.recursiveCalls[state.recursiveDepth-2].h3.show();
             drawQ4();
-            updateState();
+            updateState(3);
         }
         else if (state.questionNum == 4 && ex.data.question[4].complete == true) {
             q5Header = state.recursiveCalls[state.recursiveDepth-1].h2;
             if (q5Header !== undefined) q5Header.hide();
             drawQ5();
-            updateState();
+            updateState(4);
         }
         else if (state.questionNum == 5 && ex.data.question[5].complete == true) {
             //q5Header.show();
@@ -1219,7 +1225,7 @@ var main = function(ex) {
                 nextQuestion();
             }
             drawQ6();
-            updateState();
+            updateState(5);
         }
         else if (state.questionNum == 6 && ex.data.question[6].complete == true) {
             if (ex.data.question[7].started == false){
@@ -1229,9 +1235,8 @@ var main = function(ex) {
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
-                nextQButton.enable();
                 drawQ7();
-                updateState();
+                updateState(6);
             }
         }
         else if (state.questionNum == 7 && ex.data.question[7].complete == true) {
@@ -1243,17 +1248,19 @@ var main = function(ex) {
                 // Fake next click for just once, set the timer to ensure
                 // that the previous timer event finishes
             }else{
-                nextQButton.enable();
                 drawQ8();
-                updateState();
+                updateState(7);
             }
         }
         else if (state.questionNum == 8 && ex.data.question[8].complete == true) {
             clearCanvas();
             drawQ9();
-            updateState();
+            updateState(8);
         }
-
+        else if (state.questionNum == 9 && ex.data.question[9].complete == true) {
+            clearCanvas();
+            updateState(9);
+        }
     }
 
     var nextQButton;
@@ -1264,9 +1271,6 @@ var main = function(ex) {
 
 
 
-
-
-
     function updateState(i, l){
 
         console.log("update: i = "+xToString(i))
@@ -1274,10 +1278,19 @@ var main = function(ex) {
         quizState.quizList = quizList;
 
 
-        if (i >= 1 && i <= 9 && ex.data.question[i].finalCorrect)
-            quizState.quizScore ++;
+        quizState.quizScore = 0;
+        for (var j = 1; j <= 9; j++) {
+            if (ex.data.question[j].finalCorrect)
+                quizState.quizScore++;
+        }
         scoreBoard.text("Score: "+quizState.quizScore+"/9");
-        if (i == 9) ex.setGrade(quizState.quizScore/9.0, "");
+        console.log("III"+i)
+        if (i == 9) {
+            console.log("FINISHED")
+            ex.alert("Finished", {color: "green", transition: "alert-long"});
+            ex.createHeader(canvasWidth/2, canvasHeight/2, "Finished", {size: "large"})
+            ex.setGrade(quizState.quizScore/9.0, "");
+        }
         quizState.exdata = ex.data;
         quizState.questionObjects = questionObjects;
 
@@ -1448,6 +1461,7 @@ var main = function(ex) {
     // set the question number in the state, and then draw the question.
     function drawQ1() {
         // console.log("Question 1");
+        revertState = false;
 
         state.questionNum = 1;
         ex.data.question[1].question = "How many total calls to powerset will " +
@@ -1770,7 +1784,9 @@ var main = function(ex) {
 
     // Draws Question 6 of the quiz
     function drawQ6() {
-        console.log("drawQ6***")
+        nextQButton.enable();
+
+        revertState = false;
         clearQuestionObjects();
         // Because you don't do question 6 immediately after question 5;
         // there is one step in between the two questions
