@@ -3,126 +3,7 @@
  * @author Group 5 - Max, Emily, Andy
  */
 var main = function(ex) {
-	ex.data.meta = {
-        "author": "",
-        "email": "",
-        "title": "Powerset",
-        "description": "Learn the powerset through recursion",
-        "id": "answerid-stl",
-        "language": "python",
-        "difficulty": "medium",
-        "mainFile": "main.js",
-        "instrFile": "instr.html",
-        "constructorName": "main",
-        "menuDisplayName": "Powerset",
-        "requires": {
-        }
-    }
-    ex.data.code = {
-        "lang": "python",
-        "size": "small",
-        "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
-    }
-    ex.data.state = {
-        "recursiveDepth": 0,
-        "listLength": 3,
-        "recursiveCalls": [],
-        "prevFns": [],
-        "isReturning": false,
-        "isSubstituting": false,
-        "isMerging": false,
-        "isAdding1": false,
-        "isAdding2": false,
-        "isQuizzing": false,
-        "questionNum": 0,
-        "rectLeft": 0,
-        "rectTop": 0,
-        "rectWidth": 0,
-        "rectHeight": 0,
-        "visualList": []
-    }
-    ex.data.questionCode = {
-        "lang": "python",
-        "size": "small",
-        "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
-    }
-    ex.data.question = []
-    for (i = 0; i < 10; i++)
-        ex.data.question.push({})
-    ex.data.question[1] = {
-        "question": "",
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false
-    }
-    ex.data.question[2] = {
-        "question": "What will the next recursive call be?",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false
-    }
-    ex.data.question[3] = {
-        "question": "What will the list at this location be?",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false
-    }
-    ex.data.question[4] = {
-        "question": "What will the next recursive call be?",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false
-    }
-    ex.data.question[5] = {
-        "question": "What will be the result of this last recursive call?",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false
-    }
-    ex.data.question[6] = {
-        "question": "",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false
-    }
-    ex.data.question[7] = {
-        "question": "What is the line of the code primarily associated with the action pointed by the arrow?",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false,
-        "started": false
-    }
-    ex.data.question[8] = {
-        "question": "What is the result list from performing the action pointed by the arrow?",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false,
-        "started": false
-    }
-    ex.data.question[9] = {
-        "question": "What is the resulting list from initial call?",
-        "options": [],
-        "answer": -1,
-        "selected": -1,
-        "complete": false,
-        "finalCorrect": false,
-        "started": false
-    }
+
 
 
     ex.data.meta.mode = "practice";
@@ -152,7 +33,7 @@ var main = function(ex) {
     };
 
     // The state of our recursive visualization
-    var state = ex.data.state
+    
     ex.graphics.ctx.fillStyle = 'grey';
 
     //////////////layout configuration
@@ -161,7 +42,7 @@ var main = function(ex) {
     var topMargin = canvasHeight / 25;
     var sideMargin = canvasWidth / 25;
     var lineHeight = canvasHeight / 18;
-    var blockWidth = (canvasWidth - sideMargin * 2) / (state.listLength + 1);
+    var blockWidth = (canvasWidth - sideMargin * 2) / (3 + 1);
     //+1 because recursive calls are one more than length of the input
     var fontSize = "small"
 
@@ -422,13 +303,16 @@ var main = function(ex) {
         recurseMove(0);
     }
 
+    var revertState = false;
     var serverState = ex.data.instance.state;
     if (serverState != null) {
+        revertState = true
         if (serverState.exdata.state.isQuizzing) {
             //quizing
-            console.log(serverState);
+            console.log("serverState");
             ex.data = serverState.exdata;
             state = ex.data.state;
+            console.log(ex.data.question[2].options)
             quizState = serverState;
             questionObjects = serverState.questionObjects;
             revertQuiz();
@@ -436,11 +320,135 @@ var main = function(ex) {
             //not quizing
 
         }
-    } else {init()}
+    } else {
+        init()
+    }
 
     // init()
 
     function init(){
+        ex.data.meta = {
+            "author": "",
+            "email": "",
+            "title": "Powerset",
+            "description": "Learn the powerset through recursion",
+            "id": "answerid-stl",
+            "language": "python",
+            "difficulty": "medium",
+            "mainFile": "main.js",
+            "instrFile": "instr.html",
+            "constructorName": "main",
+            "menuDisplayName": "Powerset",
+            "requires": {
+            }
+        }
+        ex.data.code = {
+            "lang": "python",
+            "size": "small",
+            "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
+        }
+        ex.data.state = {
+            "recursiveDepth": 0,
+            "listLength": 3,
+            "recursiveCalls": [],
+            "prevFns": [],
+            "isReturning": false,
+            "isSubstituting": false,
+            "isMerging": false,
+            "isAdding1": false,
+            "isAdding2": false,
+            "isQuizzing": false,
+            "questionNum": 0,
+            "rectLeft": 0,
+            "rectTop": 0,
+            "rectWidth": 0,
+            "rectHeight": 0,
+            "visualList": []
+        }
+        ex.data.questionCode = {
+            "lang": "python",
+            "size": "small",
+            "display": "def powerset(a):\n# returns a list of all subsets of the list a\n    if (len(a) == 0):\n        return [[]]\n    else:\n        allSubsets = [ ]\n        for subset in powerset(a[1:]):\n            allSubsets += [subset]\n            allSubsets += [[a[0]] + subset]\n        return allSubsets"
+        }
+        ex.data.question = []
+        for (i = 0; i < 10; i++)
+            ex.data.question.push({})
+        ex.data.question[1] = {
+            "question": "",
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false
+        }
+        ex.data.question[2] = {
+            "question": "What will the next recursive call be?",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false
+        }
+        ex.data.question[3] = {
+            "question": "What will the list at this location be?",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false
+        }
+        ex.data.question[4] = {
+            "question": "What will the next recursive call be?",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false
+        }
+        ex.data.question[5] = {
+            "question": "What will be the result of this last recursive call?",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false
+        }
+        ex.data.question[6] = {
+            "question": "",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false
+        }
+        ex.data.question[7] = {
+            "question": "What is the line of the code primarily associated with the action pointed by the arrow?",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false,
+            "started": false
+        }
+        ex.data.question[8] = {
+            "question": "What is the result list from performing the action pointed by the arrow?",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false,
+            "started": false
+        }
+        ex.data.question[9] = {
+            "question": "What is the resulting list from initial call?",
+            "options": [],
+            "answer": -1,
+            "selected": -1,
+            "complete": false,
+            "finalCorrect": false,
+            "started": false
+        }
+
+        state = ex.data.state
         state.visualList = generateList();
 
         //generate recursiveCall data
@@ -965,8 +973,6 @@ var main = function(ex) {
     // Goes to the next step in quiz mode (regardless of whether the next
     // step is an actual question or not)
     function nextQuestion() {
-        console.log("quizNumber:, questionNum: ")
-        console.log(quizNumber)
         console.log(state.questionNum)
 
         ex.chromeElements.submitButton.enable()
@@ -1129,7 +1135,6 @@ var main = function(ex) {
 
             questionObjects.dropdown.element.disable();
             ex.data.question[9].complete = true;
-            if (quizNumber < 9) nextQButton.disable();
             state.recursiveDepth++;
             drawReturn();
             state.recursiveDepth--;
@@ -1176,9 +1181,7 @@ var main = function(ex) {
                 if (state.questionNum <=8 && ex.data.question[8].complete == false)
                 {
                     drawReturn();
-                } else if (quizNumber >= 8){
-                    drawReturn();
-                }
+                } 
                 if (state.recursiveDepth != 0) state.isSubstituting = true;
                 state.recursiveDepth--;
 
@@ -1269,8 +1272,7 @@ var main = function(ex) {
         console.log("update: i = "+xToString(i))
         
         quizState.quizList = quizList;
-        if (i > quizState.quizNumber)
-            quizState.quizNumber = i;
+
 
         if (i >= 1 && i <= 9 && ex.data.question[i].finalCorrect)
             quizState.quizScore ++;
@@ -1284,6 +1286,7 @@ var main = function(ex) {
 
         console.log("depth: "+state.recursiveDepth)
         console.log("state.questionNum: "+state.questionNum)
+        console.log(quizState.exdata.question[2].options)
 
         ex.saveState(quizState);
         // console.log(quizState.quizScore);
@@ -1300,6 +1303,11 @@ var main = function(ex) {
     }
 
     function clearQuestionObjects(){
+        if (revertState) {
+            revertState = false;
+            return;
+        }
+        console.log("ckear!!!")
         for (var property in questionObjects) {
             if (questionObjects.hasOwnProperty(property)){
                 console.log(questionObjects[property].element)
@@ -1319,15 +1327,12 @@ var main = function(ex) {
         questionObjects={};
         quizList = quizState.quizList;
         quizScore = quizState.quizScore;
-        quizNumber = quizState.quizNumber;
 
         scoreBoard = ex.createHeader(canvasWidth-80, 20, "Score: "+xToString(quizState.quizScore)+"/9",
                                 {size: "medium"})
         scoreBoard.innerWidth(40)
 
-        for (i = 0; i <= quizNumber; i++) {
-            ex.data.question[i].complete = true
-        }
+
 
         nextQButton = ex.createButton(canvasWidth*(11/12), canvasHeight*(9/10),
                                       "Next").on("click", nextQuestion);
@@ -1378,7 +1383,6 @@ var main = function(ex) {
         }
         quizState = {
         "quizList": [],
-        "quizNumber": 0, // quiz that have taken
         "quizScore": 0,
         "exdata": {},
         "questionObjects": {},
@@ -1436,7 +1440,6 @@ var main = function(ex) {
 
         drawQ1();
 
-        quizNumber = 0;
         updateState(0, quizList)
     }
 
@@ -1466,12 +1469,15 @@ var main = function(ex) {
         addQuestionObjects(q1Input, "input", "inputtext", null)
 
 
-        //if have done this q1, freeze the input
-        if (quizState.quizNumber >= 1) q1Input.disable()
     }
 
     //Generates answers for question 2 of the quiz
     function genQ2Answers(fullList, numSelections) {
+        console.log(ex.data.question[2].options)
+        if (ex.data.question[2].options.length != 0){
+            return;
+        }
+
         pset = powerset(fullList);
         // The correct answer for Q2
         correct = fullList.slice(1,fullList.length);
@@ -1490,6 +1496,7 @@ var main = function(ex) {
         selections[cIndex] = correct;
         ex.data.question[2].answer = cIndex;
 
+
         for (var i = 0; i < selections.length; i++) {
             ex.data.question[2].options.push("powerset( [" + selections[i] + "] )");
         }
@@ -1503,7 +1510,6 @@ var main = function(ex) {
         console.log("drawQ2")
         state.questionNum = 2;
 
-        if (quizNumber < 2) nextQButton.disable();
         genQ2Answers(quizList, 4);
         // console.log(xToString(ex.data.question[2].options));
         var elements = {};
@@ -1532,7 +1538,6 @@ var main = function(ex) {
         addQuestionObjects(q2Dropdown, "dropdown", "dropdown", elements)
 
         //if have done
-        if (quizNumber >= 2) q2Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
@@ -1545,6 +1550,9 @@ var main = function(ex) {
 
     //Generates answers for question 3 of the quiz
     function genQ3Answers(fullList, numSelections) {
+        if (ex.data.question[3].options.length != 0){
+            return;
+        }
         pset = powerset(fullList);
         // The correct answer for Q3
         correct = [fullList[1]];
@@ -1573,7 +1581,6 @@ var main = function(ex) {
         clearQuestionObjects();
 
         state.questionNum = 3;
-        if (quizNumber < 3) nextQButton.disable();
         genQ3Answers(quizList, 4);
         // console.log(xToString(ex.data.question[3].options));
         var elements = {};
@@ -1603,7 +1610,6 @@ var main = function(ex) {
         
         addQuestionObjects(q3Dropdown, "dropdown", "dropdown", elements)
 
-        if (quizNumber >= 3) q3Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
@@ -1617,6 +1623,9 @@ var main = function(ex) {
 
     //Generates answers for question 4 of the quiz
     function genQ4Answers(fullList, numSelections) {
+        if (ex.data.question[4].options.length != 0){
+            return;
+        }
         pset = powerset(fullList);
         // The correct answer for Q2
         correct = fullList.slice(3,fullList.length);
@@ -1647,7 +1656,6 @@ var main = function(ex) {
         clearQuestionObjects();
 
         state.questionNum = 4;
-        if (quizNumber < 4) nextQButton.disable();
         genQ4Answers(quizList, 4);
         var elements = {};
         for (var i = 0; i < ex.data.question[4].options.length; i++) {
@@ -1674,7 +1682,6 @@ var main = function(ex) {
         
 
         addQuestionObjects(q4Dropdown, "dropdown", "dropdown", elements)
-        if (quizNumber >= 4) q4Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
@@ -1688,6 +1695,9 @@ var main = function(ex) {
 
     //Generates answers for question 5 of the quiz
     function genQ5Answers(fullList, numSelections) {
+        if (ex.data.question[5].options.length != 0){
+            return;
+        }
         pset = powerset(fullList);
         // The correct answer for Q2
         correct = [[]];
@@ -1724,7 +1734,6 @@ var main = function(ex) {
 
         state.questionNum = 5;
 
-        if (quizNumber < 5) nextQButton.disable();
 
         genQ5Answers(quizList, 4);
         var elements = {};
@@ -1749,7 +1758,6 @@ var main = function(ex) {
         });
         
         addQuestionObjects(q5Dropdown, "dropdown", "dropdown", elements)
-        if (quizNumber >= 5) q5Dropdown.disable()
 
         var xQuestion = canvasWidth/2;
         var yQuestion = canvasHeight*(5/8)+lineHeight;
@@ -1789,7 +1797,6 @@ var main = function(ex) {
         addQuestionObjects(question, "question", "header", null);
 
         var q6Input = ex.createInputText(xQuestion,yQuestion + 60,"Answer (e.g.: 0)");
-        if (quizNumber >= 6) q6Input.disable()
         
         addQuestionObjects(q6Input, "input", "inputtext", null)
 
@@ -1797,6 +1804,9 @@ var main = function(ex) {
 
     //Generates answers for question 7 of the quiz
     function genQ7Answers(fullList, numSelections) {
+        if (ex.data.question[7].options.length != 0){
+            return;
+        }
         // The correct answer for Q7
         var answers = ["return [[]]", "allSubsets += [subset]",
         "allSubsets += [[a[0]] + subset]", "return allSubsets"];
@@ -1819,7 +1829,6 @@ var main = function(ex) {
         clearQuestionObjects();
         state.questionNum = 7;
 
-        if (quizNumber < 7) nextQButton.disable();
 
         genQ7Answers(quizList, 4);
         // console.log(ex.data.question[7].options);
@@ -1842,7 +1851,6 @@ var main = function(ex) {
         });
         
         addQuestionObjects(q7Dropdown, "dropdown", "dropdown", elements)
-        if (quizNumber >= 7) q7Dropdown.disable()
 
 
         var question = ex.createParagraph(xQuestion, yQuestion,
@@ -1868,6 +1876,9 @@ var main = function(ex) {
 
    //Generates answers for question 8 of the quiz
     function genQ8Answers(fullList, numSelections) {
+        if (ex.data.question[8].options.length != 0){
+            return;
+        }
         pset = powerset(fullList);
         // The correct answer for Q8
         var correct = [];
@@ -1905,7 +1916,6 @@ var main = function(ex) {
 
         state.questionNum = 8;
 
-        if (quizNumber < 8) nextQButton.disable();
 
         genQ8Answers(quizList, 4);
         // console.log(ex.data.question[8].options);
@@ -1928,7 +1938,6 @@ var main = function(ex) {
         });
         
         addQuestionObjects(q8Dropdown, "dropdown", "dropdown", elements)
-        if (quizNumber >= 8) q8Dropdown.disable()
 
 
         var question = ex.createParagraph(xQuestion, yQuestion,
@@ -1944,6 +1953,9 @@ var main = function(ex) {
 
    //Generates answers for question 9 of the quiz
     function genQ9Answers(fullList, numSelections) {
+        if (ex.data.question[9].options.length != 0){
+            return;
+        }
         pset = powerset(fullList);
         // The correct answer for Q9
         var correct = xToString(pset);
@@ -1974,7 +1986,6 @@ var main = function(ex) {
         clearQuestionObjects();
         state.questionNum = 9;
 
-        if (quizNumber < 9) nextQButton.disable();
 
         genQ9Answers(quizList, 4);
         // console.log(ex.data.question[9].options);
@@ -2001,7 +2012,6 @@ var main = function(ex) {
         });
         
         addQuestionObjects(q9Dropdown, "dropdown", "dropdown", elements)
-        if (quizNumber >= 9) q9Dropdown.disable()
 
         var question = ex.createParagraph(xQuestion, yQuestion,
                             ex.data.question[9].question, {size: "large"});
