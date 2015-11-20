@@ -45,6 +45,7 @@ var main = function(ex) {
     var blockWidth = (canvasWidth - sideMargin * 2) / (3 + 1);
     //+1 because recursive calls are one more than length of the input
     var fontSize = "small"
+    var version = 31415
 
 
 
@@ -1296,6 +1297,8 @@ var main = function(ex) {
 
 
         quizState.depth = state.recursiveDepth
+
+        quizState.version = version
 
         console.log("depth: "+state.recursiveDepth)
         console.log("state.questionNum: "+state.questionNum)
